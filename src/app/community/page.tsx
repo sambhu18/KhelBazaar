@@ -71,10 +71,10 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-linear-to-r from-blue-600 to-indigo-700 text-white py-12 px-6">
+      <div className="bg-linear-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">👥 Khel Bazaar Community</h1>
-          <p className="text-blue-100 text-lg">Connect with athletes, share experiences, and grow together</p>
+          <p className="text-teal-100 text-lg">Connect with athletes, share experiences, and grow together</p>
         </div>
       </div>
 
@@ -90,7 +90,7 @@ export default function CommunityPage() {
                   onClick={() => setActiveTab(tab)}
                   className={`pb-3 px-4 font-semibold transition ${
                     activeTab === tab
-                      ? "border-b-2 border-blue-600 text-blue-600"
+                      ? "border-b-2 border-[#00B8AE] text-[#00B8AE]"
                       : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
@@ -108,14 +108,14 @@ export default function CommunityPage() {
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
                 placeholder="What's on your mind? Share your sports experience, tips, or questions..."
-                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-600 resize-none font-medium"
+                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#00B8AE] resize-none font-medium"
                 rows={4}
               />
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={handlePostSubmit}
                   disabled={!newPost.trim()}
-                  className="ml-auto bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                  className="ml-auto bg-linear-to-r from-[#00B8AE] to-teal-500 text-white px-8 py-2 rounded-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                 >
                   Post
                 </button>
@@ -132,7 +132,7 @@ export default function CommunityPage() {
                     <div className="flex-grow">
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-bold text-gray-900">{post.author}</h4>
-                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-semibold">
+                        <span className="bg-teal-100 text-teal-700 text-xs px-2 py-1 rounded-full font-semibold">
                           {post.category}
                         </span>
                       </div>
@@ -150,7 +150,7 @@ export default function CommunityPage() {
                       <span>👍</span>
                       <span className="font-semibold">{post.likes}</span>
                     </button>
-                    <button className="flex items-center gap-2 hover:text-blue-600 transition">
+                    <button className="flex items-center gap-2 hover:text-[#00B8AE] transition">
                       <span>💬</span>
                       <span className="font-semibold">{post.comments}</span>
                     </button>
@@ -176,9 +176,9 @@ export default function CommunityPage() {
                     <div className="flex-grow">
                       <h4 className="font-bold text-gray-900">{athlete.name}</h4>
                       <p className="text-sm text-gray-600">{athlete.role}</p>
-                      <p className="text-xs text-blue-600 font-semibold">{athlete.followers} followers</p>
+                      <p className="text-xs text-[#00B8AE] font-semibold">{athlete.followers} followers</p>
                     </div>
-                    <button className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full font-semibold hover:bg-blue-200 transition text-sm">
+                    <button className="px-3 py-1 bg-linear-to-r from-[#00B8AE] to-teal-500 text-white rounded-full font-semibold hover:shadow-md transition text-sm">
                       Follow
                     </button>
                   </div>
@@ -191,7 +191,7 @@ export default function CommunityPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-6">📊 Community Stats</h3>
               <div className="space-y-4">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-blue-600">50.2K</p>
+                  <p className="text-3xl font-bold text-[#00B8AE]">50.2K</p>
                   <p className="text-sm text-gray-600">Active Members</p>
                 </div>
                 <div className="text-center border-y border-gray-200 py-4">
@@ -206,9 +206,9 @@ export default function CommunityPage() {
             </div>
 
             {/* Community Guidelines */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-bold text-blue-900 mb-3">📋 Community Guidelines</h4>
-              <ul className="text-sm text-blue-800 space-y-2">
+            <div className="bg-linear-to-r from-[#00B8AE]/10 to-teal-500/10 border border-[#00B8AE]/30 rounded-lg p-4">
+              <h4 className="font-bold text-[#00B8AE] mb-3">📋 Community Guidelines</h4>
+              <ul className="text-sm text-[#00B8AE] space-y-2">
                 <li>✓ Be respectful to all members</li>
                 <li>✓ Share authentic experiences</li>
                 <li>✓ No hate speech or discrimination</li>

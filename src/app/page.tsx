@@ -1,50 +1,32 @@
 'use client';
 import Link from "next/link";
-import {register, login} from "@/src/Services/api";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/src/Services/axiosinstance";
 
 export default function HomePage() {
-  const route = useRouter()
+  const route = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [{
-    _id: "1",
-    title: "Football",
-    price: 1500,
-    category: "football",
-    images: ["/images/football.jpg"],
-    rating: 4.8,
-    reviews: 128,
-  },
-  {
-    _id: "2",
-    title: "Cricket Bat",
-    price: 3500,
-    category: "cricket",
-    images: ["/images/cricket_bat.jpg"],
-    rating: 4.6,
-    reviews: 95,
-  },
-  {
-    _id: "3",
-    title: "Football",
-    price: 1500,
-    category: "football",
-    images: ["/images/football.jpg"],
-    rating: 4.8,
-    reviews: 128,
-  },
-  {
-    _id: "4",
-    title: "Cricket Bat",
-    price: 3500,
-    category: "cricket",
-    images: ["/images/cricket_bat.jpg"],
-    rating: 4.6,
-    reviews: 95,
-  }
-]
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get("/api/products");
+      // Basic validation to ensure we have an array
+      if (Array.isArray(response.data)) {
+        setProducts(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     { id: "all", name: "All Products", icon: "🏆" },
@@ -53,46 +35,62 @@ export default function HomePage() {
     { id: "basketball", name: "Basketball", icon: "🏀" },
   ];
 
-  const filteredProducts = selectedCategory === "all" 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  const filteredProducts = selectedCategory === "all"
+    ? products
+    : products.filter(p => {
+      // Handle categories as array or string just in case
+      if (Array.isArray(p.categories)) {
+        return p.categories.some((c: string) => c.toLowerCase() === selectedCategory.toLowerCase());
+      }
+      return p.categories?.toLowerCase().includes(selectedCategory.toLowerCase());
+    });
+
+  // Display only first 8 products for "Featured" if strict about it, or all for now
+  const displayProducts = filteredProducts.slice(0, 8);
+
+  const getImageUrl = (imagePath: string | undefined) => {
+    if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `http://localhost:5000${imagePath}`;
+  };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-linear-to-r from-blue-600 to-indigo-700 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -mr-48 -mt-48"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full -ml-48 -mb-48"></div>
-        </div>
-        
-        <div className="relative max-w-6xl mx-auto px-6 py-20">
-          <h1 className="text-6xl font-bold mb-4 leading-tight">
+      <div className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white relative overflow-hidden h-[600px] flex items-center">
+
+
+
+        {/* Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-black/10 z-0"></div>
+
+        <div className="relative max-w-6xl mx-auto px-6 py-20 z-10 w-full">
+          <h1 className="text-6xl font-bold mb-4 leading-tight drop-shadow-md">
             Play Your Game
             <br />
-            <span className="text-blue-200">With Premium Gear</span>
+            <span className="text-blue-100">With Premium Gear</span>
           </h1>
-          <p className="text-xl opacity-90 mb-8 max-w-2xl">
+          <p className="text-xl opacity-95 mb-8 max-w-2xl text-white drop-shadow-sm font-medium">
             Discover the best sports equipment from trusted brands. Whether you're a professional athlete or just starting out, we have everything you need.
           </p>
           <div className="flex gap-4 flex-wrap">
-            <button 
+            <button
               onClick={() => route.push('/products')}
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition shadow-lg hover:shadow-xl"
+              className="bg-white text-teal-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               🛍️ Shop Now
             </button>
-            <button 
+            <button
               onClick={() => route.push('/community')}
-              className="border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
+              className="border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition transform hover:-translate-y-1 backdrop-blur-sm"
             >
               👥 Join Community
             </button>
-            <button 
+            <button
               onClick={() => route.push('/auth/Login')}
-              className="border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
+              className="border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition transform hover:-translate-y-1 backdrop-blur-sm"
             >
-              🔐 Sign In
+              Sign In
             </button>
           </div>
         </div>
@@ -103,7 +101,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-2">5000+</p>
+              <p className="text-3xl font-bold text-teal-600 mb-2">{products.length > 0 ? `${products.length}+` : "100+"}</p>
               <p className="text-gray-700 font-medium">Products</p>
             </div>
             <div className="text-center">
@@ -130,11 +128,10 @@ export default function HomePage() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`p-4 rounded-lg font-semibold transition text-center ${
-                selectedCategory === cat.id
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              className={`p-4 rounded-lg font-semibold transition text-center ${selectedCategory === cat.id
+                ? "bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
             >
               <div className="text-3xl mb-2">{cat.icon}</div>
               {cat.name}
@@ -143,86 +140,140 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Jersey Customization Promo */}
+      <div className="bg-gray-900 text-white py-16 px-6 relative overflow-hidden mb-16">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-teal-500 opacity-10 transform skew-x-12"></div>
+        <div className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+          <div className="text-left md:w-1/2">
+            <h2 className="text-4xl font-bold mb-4">
+              Wear Your Passion on Your Back
+            </h2>
+            <p className="text-xl text-gray-300 mb-8">
+              Customize your jersey with your own name and number.
+              Show your support in style with our premium quality printing.
+            </p>
+            <button
+              onClick={() => route.push('/products?category=jersey')}
+              className="bg-teal-500 text-white px-8 py-4 rounded-lg font-bold hover:bg-teal-600 transition shadow-lg text-lg transform hover:-translate-y-1"
+            >
+              Start Customizing 👕
+            </button>
+          </div>
+          <div className="md:w-1/2 flex justify-center">
+            {/* Visual representation of a jersey */}
+            <div className="relative bg-white text-gray-900 w-64 h-80 rounded-3xl shadow-2xl flex flex-col items-center justify-center border-4 border-teal-500 transform rotate-3 hover:rotate-0 transition duration-500">
+              <div className="text-6xl font-black text-teal-500 mb-2">MESSI</div>
+              <div className="text-8xl font-black text-teal-500">10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Featured Products Section */}
       <div className="max-w-6xl mx-auto px-6 pb-16">
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Featured Products</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Detailed Products</h2>
           <p className="text-gray-600">Premium sports equipment curated just for you</p>
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((p: any) => (
-            <Link
-              key={p._id}
-              href={`/products/${p._id}`}
-              className="group"
-            >
-              <div className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-gray-100">
-                {/* Image Container */}
-                <div className="relative overflow-hidden bg-gray-100 h-56">
-                  <img 
-                    src={p.images?.[0]} 
-                    alt={p.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    SALE -20%
-                  </div>
-                  <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                    Hot
-                  </div>
-                </div>
-
-                {/* Content Container */}
-                <div className="p-5 flex flex-col grow">
-                  <h3 className="font-bold text-gray-800 text-lg mb-2 group-hover:text-blue-600 transition line-clamp-2">
-                    {p.title}
-                  </h3>
-                  
-                  {/* Rating */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < Math.floor(p.rating) ? "text-yellow-400" : "text-gray-300"}>★</span>
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">({p.reviews})</span>
-                  </div>
-
-                  {/* Price Section */}
-                  <div className="mt-auto">
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <p className="text-2xl font-bold text-green-600">NPR {p.price}</p>
-                      <p className="text-lg text-gray-400 line-through">NPR {Math.round(p.price * 1.25)}</p>
-                    </div>
-                    
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-                        cart.push({ ...p, qty: 1 });
-                        localStorage.setItem("cart", JSON.stringify(cart));
-                        route.push("/cart");
-                      }}
-                      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
-                    >
-                      🛒 Add to Cart
-                    </button>
-                  </div>
-                </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-56 rounded-xl mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
               </div>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : displayProducts.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <p className="text-xl text-gray-500">No products found in this category.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayProducts.map((p: any) => (
+              <Link
+                key={p._id}
+                href={`/products/${p._id}`}
+                className="group"
+              >
+                <div className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-gray-100">
+                  {/* Image Container */}
+                  <div className="relative overflow-hidden bg-gray-100 h-56">
+                    <img
+                      src={getImageUrl(p.images?.[0])}
+                      alt={p.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {/* Optional Badges based on logic, keeping static for now if needed or remove */}
+                    {/* <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                      SALE
+                    </div> */}
+                  </div>
+
+                  {/* Content Container */}
+                  <div className="p-5 flex flex-col grow">
+                    <h3 className="font-bold text-gray-800 text-lg mb-2 group-hover:text-blue-600 transition line-clamp-2">
+                      {p.title}
+                    </h3>
+
+                    {/* Rating (Static since DB doesn't have it yet, or use random/default) */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className={i < 4 ? "text-yellow-400" : "text-gray-300"}>★</span>
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600">(0)</span>
+                    </div>
+
+                    {/* Price Section */}
+                    <div className="mt-auto">
+                      <div className="flex items-baseline gap-2 mb-4">
+                        <p className="text-2xl font-bold text-green-600">{p.currency || 'NPR'} {p.price}</p>
+                        {/* <p className="text-lg text-gray-400 line-through">NPR {Math.round(p.price * 1.25)}</p> */}
+                      </div>
+
+                      <button
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+
+                          // If product has sizes, redirect to details
+                          if (p.sizes && p.sizes.length > 0) {
+                            route.push(`/products/${p._id}`);
+                            return;
+                          }
+
+                          const { addToCart } = await import("@/src/Services/cartUtils");
+                          const result = await addToCart(p);
+                          if (result.success) {
+                            alert(result.message);
+                          } else {
+                            alert(result.message);
+                          }
+                        }}
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-2 rounded-lg hover:shadow-lg transition font-semibold"
+                      >
+                        {p.sizes && p.sizes.length > 0 ? '👁️ View Options' : '🛒 Add to Cart'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* View All Products */}
         <div className="text-center mt-16">
-          <Link 
+          <Link
             href="/products"
-            className="inline-block bg-blue-600 text-white px-10 py-4 rounded-lg font-bold hover:bg-blue-700 transition shadow-lg hover:shadow-xl text-lg"
+            className="inline-block bg-gradient-to-r from-teal-500 to-cyan-600 text-white px-10 py-4 rounded-lg font-bold hover:shadow-xl transition shadow-lg text-lg"
           >
-            View All {filteredProducts.length} Products →
+            View All Products →
           </Link>
         </div>
       </div>
@@ -256,15 +307,14 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Call to Action */}
-      <div className="bg-blue-600 text-white py-16 px-6 text-center">
+      <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white py-16 px-6 text-center">
         <h2 className="text-4xl font-bold mb-4">Ready to Level Up Your Game?</h2>
         <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
           Join thousands of athletes and sports enthusiasts who trust Khel Bazaar for their gear needs.
         </p>
-        <button 
+        <button
           onClick={() => route.push('/products')}
-          className="bg-white text-blue-600 px-10 py-4 rounded-lg font-bold hover:bg-gray-50 transition text-lg shadow-lg"
+          className="bg-white text-teal-600 px-10 py-4 rounded-lg font-bold hover:bg-gray-50 transition text-lg shadow-lg"
         >
           Start Shopping Now
         </button>
@@ -272,11 +322,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
-
-
-// import { redirect } from "next/navigation";
-// export default function Home() {
-//   redirect("/auth/Login");
-// }
