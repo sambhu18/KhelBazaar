@@ -20,7 +20,9 @@ export default function AdminUsersPage() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/api/users");
-      setUsers(response.data);
+      // Backend returns { users: [], pagination: {} }
+      const usersData = Array.isArray(response.data) ? response.data : (response.data?.users || []);
+      setUsers(usersData);
     } catch (error: any) {
       setErrorMsg("Failed to fetch users");
     } finally {
@@ -96,11 +98,10 @@ export default function AdminUsersPage() {
           <button
             key={role}
             onClick={() => setRoleFilter(role)}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              roleFilter === role
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${roleFilter === role
                 ? "bg-purple-600 text-white"
                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
+              }`}
           >
             {role.charAt(0).toUpperCase() + role.slice(1)}
           </button>

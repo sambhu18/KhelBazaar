@@ -13,6 +13,13 @@ export default function CartPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  const getImageUrl = (imagePath: string | undefined) => {
+    if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
+    if (imagePath.startsWith("http")) return imagePath;
+    const base = process.env.NEXT_PUBLIC_BASEURL || 'http://localhost:5001';
+    return `${base}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -197,10 +204,10 @@ export default function CartPage() {
                 </div>
 
                 <div className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    <div key={`${item.productId}-${item.size}-${JSON.stringify(item.customization)}`} className="p-6 flex gap-4">
+                  {cartItems.map((item, index) => (
+                    <div key={item.cartItemId || `${item.productId}-${item.size}-${JSON.stringify(item.customization)}-${index}`} className="p-6 flex gap-4">
                       <img
-                        src={item.image || "/placeholder.png"}
+                        src={getImageUrl(item.image)}
                         alt={item.title}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
@@ -300,6 +307,6 @@ export default function CartPage() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }

@@ -6,11 +6,6 @@ import Image from 'next/image';
 
 interface Product {
   _id: string;
-  name: string; // Note: Backend uses 'title', fixing this to 'title' as well to match backend? 
-  // Wait, the backend returns 'title'. The interface says 'name'. 
-  // If I look at the screenshot or code, does it render 'name'?
-  // Page.tsx (homepage) uses 'title'.
-  // This dashboard file uses 'name'. 
   title: string;
   price: number;
   originalPrice?: number;
@@ -37,7 +32,7 @@ export default function Dashboard() {
       const response = await axiosInstance.get('/api/products');
       // Map backend response to interface if needed, or just use raw if it matches enough
       // Backend: title, price, stock, categories, images
-      setProducts(response.data || []);
+      setProducts(response.data.products || []);
       setError(null);
     } catch (err) {
       console.error('Error fetching products:', err);

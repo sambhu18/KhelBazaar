@@ -2,20 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
-    const token = localStorage.getItem("token");
+    const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
     setIsLoggedIn(!!token);
 
+    // Handle mobile menu close on navigation
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     // Handle scroll effect
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -98,6 +104,12 @@ export default function Navbar() {
                   📊 Dashboard
                 </button>
                 <button
+                  onClick={() => router.push("/dashboard/profile")}
+                  className="px-4 py-2 rounded-lg bg-teal-600/10 text-teal-600 font-bold hover:bg-teal-600/20 transition-all duration-300 text-sm"
+                >
+                  👤 Profile
+                </button>
+                <button
                   onClick={handleLogout}
                   className="px-4 py-2 rounded-lg bg-red-500/10 text-red-600 font-bold hover:bg-red-500/20 transition-all duration-300 text-sm"
                 >
@@ -178,6 +190,12 @@ export default function Navbar() {
                     className="w-full px-4 py-2 rounded-lg bg-[#00B8AE] text-white font-bold hover:shadow-lg transition-all duration-300"
                   >
                     📊 Dashboard
+                  </button>
+                  <button
+                    onClick={() => router.push("/dashboard/profile")}
+                    className="w-full px-4 py-2 rounded-lg bg-teal-600 text-white font-bold hover:shadow-lg transition-all duration-300"
+                  >
+                    👤 Profile
                   </button>
                   <button
                     onClick={handleLogout}

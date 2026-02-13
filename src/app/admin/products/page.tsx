@@ -20,11 +20,18 @@ export default function AdminProductsPage() {
     price: "",
     currency: "NPR",
     stock: "",
-    categories: "",
+    categories: [] as string[],
     sizes: [] as string[],
     sku: "",
     images: [] as File[],
   });
+
+  const CATEGORIES = [
+    "Football", "Cricket", "Basketball", "Volleyball",
+    "Jersey", "Shorts", "Shoes", "Accessories", "Equipment", "T-Shirt", "Tracksuit"
+  ];
+
+  const CLOTH_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 
   // Fetch products on mount
   useEffect(() => {
@@ -44,7 +51,7 @@ export default function AdminProductsPage() {
     try {
       setLoading(true);
       const response = await axiosInstance.get("/api/products");
-      setProducts(response.data);
+      setProducts(response.data.products || []);
     } catch (error: any) {
       setErrorMsg("Failed to fetch products");
     } finally {
@@ -60,14 +67,24 @@ export default function AdminProductsPage() {
     }));
   };
 
-  const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
+  const handleCategoryCheckboxChange = (category: string) => {
     setFormData((prev) => {
-      const currentSizes = prev.sizes;
-      if (checked) {
-        return { ...prev, sizes: [...currentSizes, value] };
+      const current = prev.categories;
+      if (current.includes(category)) {
+        return { ...prev, categories: current.filter((c) => c !== category) };
       } else {
-        return { ...prev, sizes: currentSizes.filter((s) => s !== value) };
+        return { ...prev, categories: [...current, category] };
+      }
+    });
+  };
+
+  const handleSizeChange = (size: string) => {
+    setFormData((prev) => {
+      const current = prev.sizes;
+      if (current.includes(size)) {
+        return { ...prev, sizes: current.filter((s) => s !== size) };
+      } else {
+        return { ...prev, sizes: [...current, size] };
       }
     });
   };
@@ -104,9 +121,9 @@ export default function AdminProductsPage() {
       submitData.append("price", formData.price);
       submitData.append("currency", formData.currency);
       submitData.append("stock", formData.stock);
-      submitData.append("categories", formData.categories);
+      formData.categories.forEach(cat => submitData.append("categories", cat));
       submitData.append("sku", formData.sku);
-      formData.sizes.forEach(size => submitData.append("sizes[]", size));
+      formData.sizes.forEach(size => submitData.append("sizes", size));
 
       formData.images.forEach((file) => {
         submitData.append("images", file);
@@ -140,7 +157,7 @@ export default function AdminProductsPage() {
       price: "",
       currency: "NPR",
       stock: "",
-      categories: "",
+      categories: [],
       sizes: [],
       sku: "",
       images: [],
@@ -159,8 +176,8 @@ export default function AdminProductsPage() {
       price: product.price.toString(),
       currency: product.currency || "NPR",
       stock: product.stock.toString(),
-      categories: product.categories?.join(", ") || "",
-      sizes: product.sizes || [],
+      categories: Array.isArray(product.categories) ? product.categories : (product.categories ? [product.categories] : []),
+      sizes: Array.isArray(product.sizes) ? product.sizes : (product.sizes ? [product.sizes] : []),
       sku: product.sku || "",
       images: [],
     });
@@ -198,8 +215,8 @@ export default function AdminProductsPage() {
           <button
             onClick={() => (showForm ? resetForm() : setShowForm(true))}
             className={`px-6 py-2.5 font-medium rounded-lg transition-all duration-200 flex items-center gap-2 ${showForm
-                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg"
+              ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg"
               }`}
           >
             {showForm ? (
@@ -343,17 +360,38 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Categories</label>
-                      <input
-                        type="text"
-                        name="categories"
-                        value={formData.categories}
-                        onChange={handleInputChange}
-                        placeholder="e.g. Sports, Summer, Sale (comma separated)"
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Separate multiple categories with commas</p>
+                      <label className="block text-sm font-bold text-gray-700 mb-3 text-cyan-700">Categories (Select Multiple) *</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        {CATEGORIES.map(cat => (
+                          <div key={cat} className="flex items-center gap-2 group cursor-pointer" onClick={() => handleCategoryCheckboxChange(cat)}>
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.categories.includes(cat) ? 'bg-teal-500 border-teal-500 shadow-sm' : 'border-gray-300 group-hover:border-teal-400'
+                              }`}>
+                              {formData.categories.includes(cat) && <span className="text-white text-xs">✓</span>}
+                            </div>
+                            <span className={`text-sm font-medium transition-colors ${formData.categories.includes(cat) ? 'text-teal-700' : 'text-gray-600'}`}>
+                              {cat}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+
+                    {/* Conditional Cloth Sizes Section */}
+                    {formData.categories.some(cat => ["Jersey", "Shorts", "T-Shirt", "Tracksuit"].includes(cat)) && (
+                      <div className="col-span-2 transition-all animate-fade-in">
+                        <label className="block text-sm font-bold text-gray-700 mb-3 text-cyan-700">Available Sizes (Cloth) *</label>
+                        <div className="flex flex-wrap gap-4 p-4 bg-teal-50/30 rounded-xl border border-teal-100">
+                          {CLOTH_SIZES.map(size => (
+                            <div key={size} className="flex items-center gap-2 group cursor-pointer" onClick={() => handleSizeChange(size)}>
+                              <div className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all ${formData.sizes.includes(size) ? 'bg-teal-600 border-teal-600 shadow-md text-white' : 'border-gray-200 bg-white group-hover:border-teal-300 text-gray-600'
+                                }`}>
+                                <span className="text-xs font-bold">{size}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { register } from "@/src/Services/api";
+import { register, googleSignIn } from "@/src/Services/api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -70,6 +71,21 @@ export default function RegisterPage() {
       setTimeout(() => router.push("/auth/Login"), 1500);
     } catch (e: any) {
       setErr(e?.response?.data?.msg || "Registration failed. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async (credentialResponse: any) => {
+    try {
+      setErr("");
+      setSuccess("");
+      setLoading(true);
+      const res = await googleSignIn({ idToken: credentialResponse.credential });
+      setSuccess("Google signup successful! Redirecting...");
+      localStorage.setItem("token", res.data.token);
+      setTimeout(() => router.push("/dashboard"), 1000);
+    } catch (e: any) {
+      setErr(e?.response?.data?.msg || "Google login failed");
       setLoading(false);
     }
   };
@@ -171,8 +187,8 @@ export default function RegisterPage() {
                       onFocus={() => setFocusedField('name')}
                       onBlur={() => setFocusedField(null)}
                       className={`w-full px-4 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-50 border-2 ${focusedField === 'name'
-                          ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
-                          : 'border-gray-300 hover:border-[#00B8AE]/50'
+                        ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
+                        : 'border-gray-300 hover:border-[#00B8AE]/50'
                         } focus:outline-none`}
                       disabled={loading}
                     />
@@ -191,8 +207,8 @@ export default function RegisterPage() {
                       onFocus={() => setFocusedField('email')}
                       onBlur={() => setFocusedField(null)}
                       className={`w-full px-4 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-50 border-2 ${focusedField === 'email'
-                          ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
-                          : 'border-gray-300 hover:border-[#00B8AE]/50'
+                        ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
+                        : 'border-gray-300 hover:border-[#00B8AE]/50'
                         } focus:outline-none`}
                       disabled={loading}
                     />
@@ -212,8 +228,8 @@ export default function RegisterPage() {
                       onFocus={() => setFocusedField('password')}
                       onBlur={() => setFocusedField(null)}
                       className={`w-full px-4 py-3 rounded-lg transition-all duration-300 font-medium bg-gray-50 border-2 ${focusedField === 'password'
-                          ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
-                          : 'border-gray-300 hover:border-[#00B8AE]/50'
+                        ? 'border-[#00B8AE] shadow-lg shadow-[#00B8AE]/20'
+                        : 'border-gray-300 hover:border-[#00B8AE]/50'
                         } focus:outline-none`}
                       disabled={loading}
                     />
@@ -263,7 +279,6 @@ export default function RegisterPage() {
                       { value: "customer", label: "Customer", emoji: "👤" },
                       { value: "club", label: "Club Vendor", emoji: "🏆" },
                       { value: "player", label: "Player", emoji: "⚽" },
-                      { value: "admin", label: "Admin", emoji: "👨‍💼" },
                     ].map((role) => (
                       <button
                         key={role.value}
@@ -271,8 +286,8 @@ export default function RegisterPage() {
                         onClick={() => setForm({ ...form, role: role.value })}
                         disabled={loading}
                         className={`p-3 rounded-lg border-2 transition font-bold text-center ${form.role === role.value
-                            ? 'border-[#00B8AE] bg-[#00B8AE]/10 text-[#00B8AE]'
-                            : 'border-gray-300 hover:border-[#00B8AE] text-gray-700'
+                          ? 'border-[#00B8AE] bg-[#00B8AE]/10 text-[#00B8AE]'
+                          : 'border-gray-300 hover:border-[#00B8AE] text-gray-700'
                           }`}
                       >
                         <div className="text-2xl mb-1">{role.emoji}</div>
@@ -319,6 +334,24 @@ export default function RegisterPage() {
                     <>Create Account</>
                   )}
                 </button>
+
+                {/* Divider */}
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t-2 border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="px-3 bg-white text-gray-500 font-bold">OR</span>
+                  </div>
+                </div>
+
+                {/* Google Signup */}
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSignIn}
+                    onError={() => setErr("Google signup failed")}
+                  />
+                </div>
 
                 {/* Divider */}
                 <div className="relative py-2">

@@ -26,9 +26,12 @@ function ProductsContent() {
     const fetchProducts = async () => {
       try {
         const response = await API.get("/api/products");
-        setProducts(response.data);
+        // Ensure we always set an array
+        setProducts(response.data.products || []);
       } catch (error) {
         console.error("Failed to fetch products:", error);
+        // Set empty array on error
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -36,9 +39,9 @@ function ProductsContent() {
     fetchProducts();
   }, []);
 
-  const categories = ["all", ...new Set(products.map((p: any) => p.category || "sports"))];
+  const categories = ["all", ...new Set((products || []).map((p: any) => p.category || "sports"))];
 
-  let filteredProducts = products.filter((p: any) =>
+  let filteredProducts = (products || []).filter((p: any) =>
     p.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (selectedCategory === "all" || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()))
   );
