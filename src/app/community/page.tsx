@@ -1,63 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getClubPosts, createClubPost, likeClubPost, commentOnPost } from "@/src/Services/api";
 
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState("feed");
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      author: "Raj Kumar",
-      avatar: "👨‍🏫",
-      title: "Best Football Techniques for Beginners",
-      content: "I've been playing football for 10 years and here are my top tips for beginners...",
-      likes: 324,
-      comments: 45,
-      timestamp: "2 hours ago",
-      category: "Tips",
-    },
-    {
-      id: 2,
-      author: "Priya Singh",
-      avatar: "⚽",
-      title: "Local Cricket Tournament Next Month",
-      content: "Anyone interested in joining our local cricket tournament? Registration opens soon!",
-      likes: 156,
-      comments: 23,
-      timestamp: "4 hours ago",
-      category: "Events",
-    },
-    {
-      id: 3,
-      author: "Amit Patel",
-      avatar: "🏆",
-      title: "How I Improved My Basketball Skills",
-      content: "My journey from casual player to competitive athlete in just 6 months...",
-      likes: 512,
-      comments: 89,
-      timestamp: "1 day ago",
-      category: "Stories",
-    },
-  ]);
-
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState("");
+  const [commentTexts, setCommentTexts] = useState<{ [key: string]: string }>({});
 
-  const handlePostSubmit = () => {
+  useEffect(() => {
+    fetchPosts();
+  }, [activeTab]);
+
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      let query = "";
+      if (activeTab === "trending") query = "?sort=likes";
+      // Events/Other filters can be added here
+      const response = await getClubPosts(query);
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePostSubmit = async () => {
     if (newPost.trim()) {
-      const post = {
-        id: posts.length + 1,
-        author: "You",
-        avatar: "👤",
-        title: newPost.split("\n")[0],
-        content: newPost,
-        likes: 0,
-        comments: 0,
-        timestamp: "now",
-        category: "General",
-      };
-      setPosts([post, ...posts]);
-      setNewPost("");
+      try {
+        const formData = new FormData();
+        formData.append("title", newPost.split("\n")[0]);
+        formData.append("description", newPost);
+        formData.append("category", "General");
+        // For now, using a placeholder clubId or getting it from user context if available
+        // In a real scenario, the user might select a club or it's a general community post
+        // The backend requires clubId for now based on the model
+        // If clubId is not available, we might need to adjust backend or provide a default
+        
+        // await createClubPost(formData);
+        // fetchPosts();
+        setNewPost("");
+        alert("Post functionality requires a selected club. Please post from a Club Dashboard for now.");
+      } catch (error) {
+        console.error("Failed to create post:", error);
+      }
+    }
+  };
+
+  const handleLike = async (postId: string) => {
+    try {
+      await likeClubPost(postId);
+      setPosts(posts.map(p => p._id === postId ? { ...p, likes: p.likes + 1 } : p));
+    } catch (error) {
+      console.error("Failed to like post:", error);
+    }
+  };
+
+  const handleCommentSubmit = async (postId: string) => {
+    const text = commentTexts[postId];
+    if (!text?.trim()) return;
+
+    try {
+      const response = await commentOnPost(postId, { text });
+      setPosts(posts.map(p => p._id === postId ? response.data.post : p));
+      setCommentTexts({ ...commentTexts, [postId]: "" });
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+      alert("Please login to comment");
     }
   };
 
@@ -124,43 +138,89 @@ export default function CommunityPage() {
 
             {/* Posts Feed */}
             <div className="space-y-4">
-              {posts.map((post) => (
-                <div key={post.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
-                  {/* Post Header */}
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="text-3xl">{post.avatar}</div>
-                    <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-bold text-gray-900">{post.author}</h4>
-                        <span className="bg-teal-100 text-teal-700 text-xs px-2 py-1 rounded-full font-semibold">
-                          {post.category}
-                        </span>
+              {loading ? (
+                <div className="text-center py-12">
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00B8AE] mx-auto"></div>
+                   <p className="mt-4 text-gray-500">Loading community feed...</p>
+                </div>
+              ) : posts.length === 0 ? (
+                <div className="bg-white rounded-xl p-12 text-center border border-gray-100">
+                  <p className="text-gray-500">No posts yet. Be the first to share something!</p>
+                </div>
+              ) : (
+                posts.map((post) => (
+                  <div key={post._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+                    {/* Post Header */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="text-3xl bg-gray-100 p-2 rounded-full w-12 h-12 flex items-center justify-center">
+                        {post.createdBy?.avatar || "👤"}
                       </div>
-                      <p className="text-sm text-gray-500">{post.timestamp}</p>
+                      <div className="flex-grow">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-bold text-gray-900">{post.createdBy?.name || "Member"}</h4>
+                          <span className="bg-teal-100 text-teal-700 text-xs px-2 py-1 rounded-full font-semibold">
+                            {post.category}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500">{new Date(post.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+
+                    {/* Post Content */}
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{post.title}</h3>
+                    <p className="text-gray-700 mb-4">{post.description}</p>
+
+                    {/* Post Stats */}
+                    <div className="flex items-center gap-6 py-4 border-y border-gray-100 text-gray-600">
+                      <button 
+                        onClick={() => handleLike(post._id)}
+                        className="flex items-center gap-2 hover:text-red-600 transition"
+                      >
+                        <span>👍</span>
+                        <span className="font-semibold">{post.likes}</span>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        <span>💬</span>
+                        <span className="font-semibold">{post.comments?.length || 0}</span>
+                      </div>
+                      <button className="flex items-center gap-2 hover:text-green-600 transition ml-auto">
+                        <span>📤</span>
+                        <span className="font-semibold">Share</span>
+                      </button>
+                    </div>
+
+                    {/* Comments Section */}
+                    {post.comments?.length > 0 && (
+                      <div className="mt-4 space-y-3 pl-4 border-l-2 border-gray-50">
+                        {post.comments.slice(0, 3).map((comment: any, idx: number) => (
+                          <div key={idx} className="bg-gray-50 p-3 rounded-lg text-sm">
+                            <span className="font-bold text-gray-900">{comment.userId?.name}: </span>
+                            <span className="text-gray-700">{comment.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Add Comment */}
+                    <div className="mt-4 flex gap-2">
+                      <input 
+                        type="text"
+                        value={commentTexts[post._id] || ""}
+                        onChange={(e) => setCommentTexts({ ...commentTexts, [post._id]: e.target.value })}
+                        placeholder="Write a comment..."
+                        className="flex-grow bg-gray-50 border-none rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#00B8AE] outline-none"
+                      />
+                      <button 
+                        onClick={() => handleCommentSubmit(post._id)}
+                        disabled={!commentTexts[post._id]?.trim()}
+                        className="text-[#00B8AE] font-bold text-sm px-2 disabled:opacity-50"
+                      >
+                        Send
+                      </button>
                     </div>
                   </div>
-
-                  {/* Post Content */}
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{post.title}</h3>
-                  <p className="text-gray-700 mb-4">{post.content}</p>
-
-                  {/* Post Stats */}
-                  <div className="flex items-center gap-6 pt-4 border-t border-gray-200 text-gray-600">
-                    <button className="flex items-center gap-2 hover:text-red-600 transition">
-                      <span>👍</span>
-                      <span className="font-semibold">{post.likes}</span>
-                    </button>
-                    <button className="flex items-center gap-2 hover:text-[#00B8AE] transition">
-                      <span>💬</span>
-                      <span className="font-semibold">{post.comments}</span>
-                    </button>
-                    <button className="flex items-center gap-2 hover:text-green-600 transition ml-auto">
-                      <span>📤</span>
-                      <span className="font-semibold">Share</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 

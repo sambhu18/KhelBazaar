@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getCart } from "@/src/Services/api";
 import API from "@/src/Services/api";
 import Link from "next/link";
 
@@ -23,12 +24,10 @@ export default function CheckoutPage() {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          // Fix: authenticated users might not have cart in local storage
+          // Set Authorization header for subsequence requests
           API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-          const res = await API.get("/users/cart");
+          const res = await getCart();
           // Backend returns { cartItems, totalPrice }
-          // We need to map it to match the structure used in checkout (which seems to expect array directly?)
-          // The current cart/page.tsx uses res.data.cartItems.
           setCart(res.data.cartItems || []);
         } catch (err) {
           console.error("Failed to fetch cart", err);

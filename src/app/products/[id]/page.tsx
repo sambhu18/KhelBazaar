@@ -5,12 +5,12 @@ import { useParams } from 'next/navigation';
 import {
   getProductById,
   getProductReviews,
-  addToCart,
   addToWishlist,
   createReview,
   checkRentalAvailability,
   createRental
 } from '@/src/Services/api';
+import { addToCart } from '@/src/Services/cartUtils';
 
 interface Product {
   _id: string;
@@ -159,20 +159,19 @@ export default function ProductDetailPage() {
         return;
       }
 
-      const cartData: any = {
-        productId: product._id,
+      const result = await addToCart({
+        ...product,
         quantity,
         size: selectedSize,
-        color: selectedColor
-      };
-
-      // Add customization if applicable
-      if (product.customizable && (customization.name || customization.number)) {
-        cartData.customization = customization;
+        color: selectedColor,
+        customization: (product.customizable && (customization.name || customization.number)) ? customization : undefined
+      });
+      
+      if (result.success) {
+        alert(result.message || 'Added to cart successfully!');
+      } else {
+        alert(result.message || 'Failed to add to cart');
       }
-
-      await addToCart(cartData);
-      alert('Added to cart successfully!');
     } catch (err: any) {
       alert(err.response?.data?.msg || 'Failed to add to cart');
     } finally {

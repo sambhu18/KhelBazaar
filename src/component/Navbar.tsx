@@ -10,6 +10,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -35,6 +37,12 @@ export default function Navbar() {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     router.push("/");
+  };
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
@@ -90,6 +98,9 @@ export default function Navbar() {
               <input
                 type="text"
                 placeholder="🔍 Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
                 className="w-64 px-4 py-2.5 border-2 border-gray-200 rounded-full focus:outline-none focus:border-[#00B8AE] transition-all duration-300 hover:border-[#00B8AE]/50 text-sm font-medium"
               />
             </div>

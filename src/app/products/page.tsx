@@ -12,14 +12,17 @@ function ProductsContent() {
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [sortBy, setSortBy] = useState("featured");
 
   useEffect(() => {
-    // Sync category from URL if it changes (optional but good for back button)
+    // Sync category and search from URL if they change
     const cat = searchParams.get("category");
     if (cat) setSelectedCategory(cat);
+    
+    const search = searchParams.get("search");
+    if (search !== null) setSearchTerm(search);
   }, [searchParams]);
 
   useEffect(() => {
