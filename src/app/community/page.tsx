@@ -81,7 +81,7 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-linear-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6">
+      <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">👥 Khel Bazaar Community</h1>
           <p className="text-teal-100 text-lg">Connect with athletes, share experiences, and grow together</p>
@@ -125,7 +125,7 @@ export default function CommunityPage() {
                 <button
                   onClick={handlePostSubmit}
                   disabled={!newPost.trim()}
-                  className="ml-auto bg-linear-to-r from-[#00B8AE] to-teal-500 text-white px-8 py-2 rounded-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                  className="ml-auto bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white px-8 py-2 rounded-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                 >
                   Post
                 </button>
@@ -234,7 +234,7 @@ export default function CommunityPage() {
                       <p className="text-sm text-gray-600">{athlete.role}</p>
                       <p className="text-xs text-[#00B8AE] font-semibold">{athlete.followers} followers</p>
                     </div>
-                    <button className="px-3 py-1 bg-linear-to-r from-[#00B8AE] to-teal-500 text-white rounded-full font-semibold hover:shadow-md transition text-sm">
+                    <button className="px-3 py-1 bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white rounded-full font-semibold hover:shadow-md transition text-sm">
                       Follow
                     </button>
                   </div>
@@ -262,7 +262,7 @@ export default function CommunityPage() {
             </div>
 
             {/* Community Guidelines */}
-            <div className="bg-linear-to-r from-[#00B8AE]/10 to-teal-500/10 border border-[#00B8AE]/30 rounded-lg p-4">
+            <div className="bg-gradient-to-r from-[#00B8AE]/10 to-teal-500/10 border border-[#00B8AE]/30 rounded-lg p-4">
               <h4 className="font-bold text-[#00B8AE] mb-3">📋 Community Guidelines</h4>
               <ul className="text-sm text-[#00B8AE] space-y-2">
                 <li>✓ Be respectful to all members</li>

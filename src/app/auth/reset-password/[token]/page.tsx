@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
             <div className="w-full max-w-md">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                    <div className="bg-linear-to-r from-[#00B8AE] to-teal-500 p-8">
+                    <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 p-8">
                         <h2 className="text-3xl font-bold text-white mb-2">Reset Password</h2>
                         <p className="text-teal-100">Enter your new password below</p>
                     </div>
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-linear-to-r from-[#00B8AE] to-teal-500 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                            className="w-full bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold py-4 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
                         >
                             {loading ? "Resetting..." : "Reset Password"}
                         </button>

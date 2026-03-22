@@ -53,13 +53,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
 
 
       {/* Login Section */}
       <div className="grid md:grid-cols-2 min-h-[calc(100vh-300px)]">
         {/* Left Side - Branding */}
-        <div className="hidden md:flex md:flex-col md:justify-center md:items-center md:bg-linear-to-br md:from-[#00B8AE] md:to-teal-600 md:p-12 md:text-white">
+        <div className="hidden md:flex md:flex-col md:justify-center md:items-center md:bg-gradient-to-br md:from-[#00B8AE] md:to-teal-600 md:p-12 md:text-white">
           <div className="text-center">
             <div className="text-7xl mb-6">⚽</div>
             <h1 className="text-5xl font-bold mb-4">Khel Bazaar</h1>
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="md:hidden text-center mb-8">
-              <div className="inline-block bg-linear-to-r from-[#00B8AE] to-teal-500 p-3 rounded-full mb-4">
+              <div className="inline-block bg-gradient-to-r from-[#00B8AE] to-teal-500 p-3 rounded-full mb-4">
                 <span className="text-3xl">⚽</span>
               </div>
               <h1 className="text-3xl font-bold text-gray-900">Khel Bazaar</h1>
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
             {/* Form Container */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <div className="bg-linear-to-r from-[#00B8AE] to-teal-500 p-8">
+              <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 p-8">
                 <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
                 <p className="text-teal-100">Login to your account</p>
               </div>
@@ -204,7 +204,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-linear-to-r from-[#00B8AE] to-teal-500 text-white font-bold py-4 rounded-lg hover:shadow-xl hover:shadow-[#00B8AE]/30 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg mt-2"
+                  className="w-full bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold py-4 rounded-lg hover:shadow-xl hover:shadow-[#00B8AE]/30 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg mt-2"
                 >
                   {loading ? (
                     <>

@@ -307,35 +307,36 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Product Main Section */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+        <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 overflow-hidden mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 p-8 lg:p-12">
             {/* Product Images */}
-            <div className="space-y-4">
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+            <div className="space-y-6">
+              <div className="aspect-square bg-gray-50 rounded-[24px] overflow-hidden border border-gray-100 shadow-sm relative group">
                 {product.images && product.images.length > 0 ? (
                   <img
                     src={getImageUrl(product.images[selectedImage])}
                     alt={product.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 text-6xl">
                     📦
                   </div>
                 )}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
               {/* Image Thumbnails */}
               {product.images && product.images.length > 1 && (
-                <div className="flex space-x-2 overflow-x-auto">
+                <div className="flex space-x-4 overflow-x-auto pb-2 no-scrollbar">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-blue-500' : 'border-gray-200'
+                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${selectedImage === index ? 'border-[#00B8AE] shadow-md scale-105' : 'border-gray-200 hover:border-[#00B8AE]/50'
                         }`}
                     >
                       <img
@@ -350,78 +351,97 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Product Info */}
-            <div className="space-y-6">
+            <div className="flex flex-col">
               {/* Title and Rating */}
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center">
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="bg-teal-50 text-teal-700 font-bold uppercase tracking-widest text-[10px] px-3 py-1 rounded-full border border-teal-100">
+                    {product.categories?.[0] || 'Equipment'}
+                  </span>
+                  {product.isRentable && (
+                    <span className="bg-purple-50 text-purple-700 font-bold uppercase tracking-widest text-[10px] px-3 py-1 rounded-full border border-purple-100">
+                      Rentable
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight tracking-tighter">{product.title}</h1>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
                     {renderStars(product.averageRating)}
-                    <span className="ml-2 text-sm text-gray-600">
-                      ({product.totalReviews} reviews)
+                    <span className="ml-2 font-bold text-gray-700">
+                      {product.averageRating.toFixed(1)} <span className="text-gray-400 font-medium">({product.totalReviews} reviews)</span>
                     </span>
                   </div>
                   {product.brand && (
-                    <span className="text-sm text-gray-500">by {product.brand}</span>
+                    <span className="flex items-center gap-2 text-sm font-bold text-gray-500 uppercase tracking-widest">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                      {product.brand}
+                    </span>
                   )}
                 </div>
               </div>
 
               {/* Price */}
-              <div className="space-y-2">
-                <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-bold text-gray-900">
+              <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <div className="flex items-end gap-3 mb-1">
+                  <span className="text-5xl font-black text-[#00B8AE] tracking-tighter">
                     {product.currency} {calculatePrice().toLocaleString()}
                   </span>
                   {product.originalPrice && product.originalPrice > product.price && (
-                    <span className="text-lg text-gray-500 line-through">
+                    <span className="text-xl font-bold text-gray-400 line-through mb-1.5">
                       {product.currency} {(product.originalPrice * quantity).toLocaleString()}
                     </span>
                   )}
                 </div>
                 {product.isRentable && product.rentalPrice && (
-                  <div className="text-sm text-blue-600">
-                    Or rent from {product.currency} {product.rentalPrice.daily}/day
+                  <div className="inline-block mt-3 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 text-sm font-bold text-blue-700">
+                    📅 Available for Rent — from {product.currency} {product.rentalPrice.daily}/day
                   </div>
                 )}
               </div>
 
               {/* Short Description */}
               {product.shortDescription && (
-                <p className="text-gray-600">{product.shortDescription}</p>
+                <p className="text-gray-600 text-lg leading-relaxed mb-8 font-medium">
+                  {product.shortDescription}
+                </p>
               )}
 
               {/* Size Selection */}
               {product.variants && product.variants.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Size
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="block text-sm font-black text-gray-900 uppercase tracking-widest">
+                      Select Size
                     </label>
                     {product.sizeChart && (
                       <button
                         onClick={() => setShowSizeChart(true)}
-                        className="text-sm text-blue-600 hover:text-blue-500"
+                        className="text-sm font-bold text-[#00B8AE] hover:text-teal-600 flex items-center gap-1"
                       >
-                        Size Chart
+                        📐 Size Guide
                       </button>
                     )}
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="flex flex-wrap gap-3">
                     {product.variants.map((variant) => (
                       <button
                         key={variant.size}
                         onClick={() => setSelectedSize(variant.size)}
                         disabled={variant.stock === 0}
-                        className={`px-3 py-2 border rounded-md text-sm font-medium ${selectedSize === variant.size
-                          ? 'bg-blue-600 text-white border-blue-600'
+                        className={`relative px-6 py-3 border-2 rounded-xl text-base font-bold transition-all duration-300 ${selectedSize === variant.size
+                          ? 'bg-[#00B8AE] text-white border-[#00B8AE] shadow-lg shadow-teal-500/30 scale-105'
                           : variant.stock === 0
-                            ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                            ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50'
+                            : 'border-gray-200 text-gray-700 hover:border-[#00B8AE] hover:text-[#00B8AE] bg-white'
                           }`}
                       >
                         {variant.size}
-                        {variant.stock === 0 && <div className="text-xs">Out</div>}
+                        {variant.stock === 0 && (
+                          <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">
+                            Sold Out
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -446,29 +466,29 @@ export default function ProductDetailPage() {
 
               {/* Customization Options */}
               {product.customizable && product.customizationOptions && (
-                <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
-                  <h3 className="font-medium text-gray-900">Customize Your Product</h3>
+                <div className="mb-8 p-6 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl border border-teal-100 shadow-inner">
+                  <h3 className="font-black text-gray-900 uppercase tracking-widest text-sm mb-4">✨ Customize Your Gear</h3>
 
                   {product.customizationOptions.allowNamePrint && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Name (max {product.customizationOptions.maxNameLength} characters)
+                    <div className="mb-4">
+                      <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                        Name Print (Max {product.customizationOptions.maxNameLength} char)
                       </label>
                       <input
                         type="text"
                         maxLength={product.customizationOptions.maxNameLength}
                         value={customization.name}
                         onChange={(e) => setCustomization({ ...customization, name: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter name for printing"
+                        className="w-full px-4 py-3 border-2 border-white rounded-xl focus:border-[#00B8AE] focus:outline-none focus:ring-4 focus:ring-teal-500/10 font-medium text-gray-900 shadow-sm transition-all"
+                        placeholder="e.g. RONALDO"
                       />
                     </div>
                   )}
 
                   {product.customizationOptions.allowNumberPrint && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Number ({product.customizationOptions.numberRange.min}-{product.customizationOptions.numberRange.max})
+                    <div className="mb-4">
+                      <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wide">
+                        Squad Number ({product.customizationOptions.numberRange.min}-{product.customizationOptions.numberRange.max})
                       </label>
                       <input
                         type="number"
@@ -476,84 +496,90 @@ export default function ProductDetailPage() {
                         max={product.customizationOptions.numberRange.max}
                         value={customization.number}
                         onChange={(e) => setCustomization({ ...customization, number: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                        placeholder="Enter number"
+                        className="w-full px-4 py-3 border-2 border-white rounded-xl focus:border-[#00B8AE] focus:outline-none focus:ring-4 focus:ring-teal-500/10 font-medium text-gray-900 shadow-sm transition-all"
+                        placeholder="e.g. 7"
                       />
                     </div>
                   )}
 
-                  <div className="text-sm text-blue-600">
-                    Customization: +{product.currency} {product.customizationOptions.customizationPrice}
+                  <div className="font-black text-[#00B8AE] text-sm flex items-center gap-2 mt-4 bg-white px-4 py-2 rounded-lg inline-flex shadow-sm">
+                    <span>🪙</span> Customization Fee: +{product.currency} {product.customizationOptions.customizationPrice}
                   </div>
                 </div>
               )}
 
               {/* Quantity */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="mb-8">
+                <label className="block text-sm font-black text-gray-900 uppercase tracking-widest mb-3">
                   Quantity
                 </label>
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    -
-                  </button>
-                  <span className="px-4 py-1 border border-gray-300 rounded-md bg-gray-50">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    +
-                  </button>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center bg-gray-50 border-2 border-gray-200 rounded-xl p-1 shadow-sm w-max">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-[#00B8AE] hover:bg-teal-50 rounded-lg transition-colors font-bold text-xl"
+                    >
+                      -
+                    </button>
+                    <span className="w-12 text-center font-bold text-gray-900 text-lg">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-[#00B8AE] hover:bg-teal-50 rounded-lg transition-colors font-bold text-xl"
+                    >
+                      +
+                    </button>
+                  </div>
+                  
+                  {/* Stock Status */}
+                  <div className="ml-4">
+                    {product.stock > 0 ? (
+                      <span className="inline-flex items-center gap-1.5 text-sm text-green-600 font-bold bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        {product.stock} in stock
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-sm text-red-600 font-bold bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">
+                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                        Out of Stock
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Stock Status */}
-              <div>
-                {product.stock > 0 ? (
-                  <span className="text-sm text-green-600 font-medium">
-                    ✓ In Stock ({product.stock} available)
-                  </span>
-                ) : (
-                  <span className="text-sm text-red-600 font-medium">
-                    ✗ Out of Stock
-                  </span>
-                )}
-              </div>
-
               {/* Action Buttons */}
-              <div className="space-y-3">
-                <div className="flex space-x-3">
+              <div className="space-y-4 mt-auto pt-6 border-t border-gray-100">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={handleAddToCart}
                     disabled={product.stock === 0 || actionLoading === 'cart'}
-                    className={`flex-1 px-6 py-3 rounded-md font-medium transition-colors ${product.stock === 0
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                      } ${actionLoading === 'cart' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`flex-1 py-4 px-8 rounded-xl font-black text-lg transition-all duration-300 flex items-center justify-center gap-3 ${product.stock === 0
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white hover:shadow-xl hover:shadow-teal-500/30 transform hover:-translate-y-1 active:scale-95'
+                      } ${actionLoading === 'cart' ? 'opacity-70 cursor-wait' : ''}`}
                   >
                     {actionLoading === 'cart' ? (
-                      <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      </div>
+                      <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
                     ) : product.stock === 0 ? (
-                      'Out of Stock'
+                      'OUT OF STOCK'
                     ) : (
-                      '🛒 Add to Cart'
+                      <>
+                        <span className="text-2xl pt-1">🛒</span> ADD TO CART
+                      </>
                     )}
                   </button>
 
                   <button
                     onClick={handleAddToWishlist}
                     disabled={actionLoading === 'wishlist'}
-                    className={`px-6 py-3 border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 transition-colors ${actionLoading === 'wishlist' ? 'opacity-50 cursor-not-allowed' : ''
+                    className={`py-4 px-8 border-2 rounded-xl font-black text-lg transition-all duration-300 flex items-center justify-center gap-2 ${actionLoading === 'wishlist' 
+                      ? 'border-gray-200 text-gray-400 bg-gray-50' 
+                      : 'border-gray-200 text-gray-700 bg-white hover:border-rose-500 hover:text-rose-500 hover:bg-rose-50 active:scale-95'
                       }`}
                   >
-                    {actionLoading === 'wishlist' ? '...' : '♡ Wishlist'}
+                    {actionLoading === 'wishlist' ? '...' : '♡'}
                   </button>
                 </div>
 
@@ -561,9 +587,9 @@ export default function ProductDetailPage() {
                 {product.isRentable && (
                   <button
                     onClick={() => setShowRentalModal(true)}
-                    className="w-full px-6 py-3 border-2 border-green-500 text-green-600 rounded-md font-medium hover:bg-green-50 transition-colors"
+                    className="w-full py-4 px-8 bg-black text-white rounded-xl font-black text-lg hover:bg-gray-900 transition-all duration-300 hover:shadow-xl flex items-center justify-center gap-3 active:scale-95 border border-black"
                   >
-                    📅 Rent This Item
+                    📅 RENT GEAR NOW 
                   </button>
                 )}
               </div>
@@ -572,19 +598,19 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Product Details Tabs */}
-        <div className="bg-white rounded-lg shadow-sm mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+        <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 mb-12 overflow-hidden">
+          <div className="border-b-2 border-gray-100 bg-gray-50/50">
+            <nav className="flex space-x-2 px-8 pt-4 no-scrollbar overflow-x-auto">
               {['description', 'reviews', 'specifications'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  className={`py-4 px-8 font-black text-sm uppercase tracking-widest rounded-t-2xl transition-all duration-300 ${activeTab === tab
+                    ? 'bg-white text-[#00B8AE] shadow-[0_-4px_10px_rgba(0,0,0,0.02)] border-t-2 border-l-2 border-r-2 border-gray-100 border-b-0 -mb-[2px] z-10'
+                    : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100/50 border-2 border-transparent'
                     }`}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab}
                 </button>
               ))}
             </nav>
@@ -607,7 +633,7 @@ export default function ProductDetailPage() {
                   </h3>
                   <button
                     onClick={() => setShowReviewForm(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-6 py-3 bg-[#00B8AE] hover:bg-teal-600 text-white font-bold rounded-xl transition-colors shadow-md"
                   >
                     Write Review
                   </button>

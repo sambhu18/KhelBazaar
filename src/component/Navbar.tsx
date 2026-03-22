@@ -13,6 +13,30 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  const updateCartCount = async () => {
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const { default: axiosInstance } = await import('@/src/Services/axiosinstance');
+        const response = await axiosInstance.get("/api/users/cart");
+        setCartItemCount(response.data.cartItems?.length || 0);
+      } catch (error) {
+        console.error("Failed to fetch cart count", error);
+      }
+    } else {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartItemCount(cart.length);
+    }
+  };
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('cartUpdated', updateCartCount);
+    return () => window.removeEventListener('cartUpdated', updateCartCount);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     // Check if user is logged in
@@ -47,13 +71,15 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`w-full sticky top-0 z-50 transition-all duration-300 ${scrolled
-        ? "bg-white shadow-lg border-b-2 border-teal-600"
-        : "bg-white border-b border-gray-200"
+      className={`w-full fixed top-0 z-50 transition-all duration-500 ${scrolled
+        ? "bg-white/90 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-b border-gray-100 py-2"
+        : "bg-transparent py-4"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className={`transition-all duration-500 flex items-center justify-between rounded-2xl px-6 ${
+          !scrolled ? "bg-white shadow-[0_8px_30px_rgb(0,0,0,0.08)] py-4 border border-gray-100" : "py-2"
+        }`}>
           {/* Logo & Main Navigation */}
           <div className="flex items-center gap-8">
             <Link
@@ -66,27 +92,24 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6 font-semibold text-gray-700">
+            <div className="hidden md:flex items-center gap-2 font-bold text-gray-600">
               <Link
                 href="/"
-                className="relative group py-2 px-3 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-all duration-300"
+                className="relative group py-2.5 px-4 rounded-xl hover:bg-teal-50 hover:text-[#00B8AE] transition-all duration-300 flex items-center gap-2"
               >
-                🏠 Home
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-600 group-hover:w-full transition-all duration-300"></span>
+                <span>🏠</span> Home
               </Link>
               <Link
                 href="/products"
-                className="relative group py-2 px-3 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-all duration-300"
+                className="relative group py-2.5 px-4 rounded-xl hover:bg-teal-50 hover:text-[#00B8AE] transition-all duration-300 flex items-center gap-2"
               >
-                🛍️ Shop
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-600 group-hover:w-full transition-all duration-300"></span>
+                <span>🛍️</span> Shop
               </Link>
               <Link
                 href="/community"
-                className="relative group py-2 px-3 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-all duration-300"
+                className="relative group py-2.5 px-4 rounded-xl hover:bg-teal-50 hover:text-[#00B8AE] transition-all duration-300 flex items-center gap-2"
               >
-                👥 Community
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-teal-600 group-hover:w-full transition-all duration-300"></span>
+                <span>👥</span> Community
               </Link>
             </div>
           </div>
@@ -94,52 +117,55 @@ export default function Navbar() {
           {/* Search & Auth Section */}
           <div className="hidden md:flex items-center gap-4">
             {/* Search Bar */}
-            <div className="relative hidden lg:block">
+            <div className="relative hidden lg:block group">
               <input
                 type="text"
-                placeholder="🔍 Search products..."
+                placeholder="Search premium gear..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
-                className="w-64 px-4 py-2.5 border-2 border-gray-200 rounded-full focus:outline-none focus:border-[#00B8AE] transition-all duration-300 hover:border-[#00B8AE]/50 text-sm font-medium"
+                className="w-[280px] px-5 py-2.5 bg-gray-50 border-2 border-transparent group-hover:border-gray-200 rounded-2xl focus:outline-none focus:border-[#00B8AE] focus:bg-white transition-all duration-300 text-sm font-bold text-gray-700 placeholder-gray-400 shadow-inner"
               />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#00B8AE] transition-colors duration-300 pointer-events-none">
+                🔍
+              </span>
             </div>
 
             {/* Auth Buttons */}
             {isLoggedIn ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => router.push("/dashboard")}
-                  className="px-4 py-2 rounded-lg bg-[#00B8AE]/10 text-[#00B8AE] font-bold hover:bg-[#00B8AE]/20 transition-all duration-300 text-sm"
+                  className="px-4 py-2.5 rounded-xl bg-gray-50 text-gray-700 font-bold hover:bg-[#00B8AE] hover:text-white transition-all duration-300 text-sm shadow-sm flex items-center gap-2"
                 >
-                  📊 Dashboard
+                  <span>📊</span> <span className="hidden xl:inline">Dashboard</span>
                 </button>
                 <button
                   onClick={() => router.push("/dashboard/profile")}
-                  className="px-4 py-2 rounded-lg bg-teal-600/10 text-teal-600 font-bold hover:bg-teal-600/20 transition-all duration-300 text-sm"
+                  className="px-4 py-2.5 rounded-xl bg-gray-50 text-gray-700 font-bold hover:bg-[#00B8AE] hover:text-white transition-all duration-300 text-sm shadow-sm flex items-center gap-2"
                 >
-                  👤 Profile
+                  <span>👤</span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 rounded-lg bg-red-500/10 text-red-600 font-bold hover:bg-red-500/20 transition-all duration-300 text-sm"
+                  className="px-4 py-2.5 rounded-xl bg-rose-50 text-rose-600 font-bold hover:bg-rose-500 hover:text-white transition-all duration-300 text-sm shadow-sm flex items-center gap-2"
                 >
-                  🚪 Logout
+                  <span>🚪</span>
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
                 <Link
                   href="/auth/Login"
-                  className="px-5 py-2.5 rounded-lg bg-white border-2 border-[#00B8AE] text-[#00B8AE] font-bold hover:bg-[#00B8AE]/10 transition-all duration-300 text-sm"
+                  className="px-6 py-2.5 rounded-xl bg-white border-2 border-gray-100 text-gray-700 font-bold hover:border-[#00B8AE] hover:text-[#00B8AE] transition-all duration-300 text-sm shadow-sm"
                 >
-                  🔐 Login
+                  Login
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold hover:shadow-lg transition-all duration-300 text-sm"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold shadow-[0_0_15px_rgba(0,184,174,0.3)] hover:shadow-[0_0_25px_rgba(0,184,174,0.5)] transform hover:-translate-y-0.5 transition-all duration-300 text-sm"
                 >
-                  📝 Sign Up
+                  Sign Up Free
                 </Link>
               </div>
             )}
@@ -150,9 +176,11 @@ export default function Navbar() {
               className="relative p-2.5 rounded-full hover:bg-[#00B8AE]/10 transition-all duration-300 font-bold text-lg"
             >
               🛒
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                0
-              </span>
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-sm animate-fade-in-up">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -167,70 +195,60 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pb-4 space-y-2 animate-in fade-in slide-in-from-top">
-            <Link
-              href="/"
-              className="block px-4 py-2 rounded-lg hover:bg-[#00B8AE]/10 hover:text-[#00B8AE] transition-all duration-300 font-bold"
-            >
-              🏠 Home
-            </Link>
-            <Link
-              href="/products"
-              className="block px-4 py-2 rounded-lg hover:bg-[#00B8AE]/10 hover:text-[#00B8AE] transition-all duration-300 font-bold"
-            >
-              🛍️ Shop
-            </Link>
-            <Link
-              href="/community"
-              className="block px-4 py-2 rounded-lg hover:bg-[#00B8AE]/10 hover:text-[#00B8AE] transition-all duration-300 font-bold"
-            >
-              👥 Community
-            </Link>
-            <Link
-              href="/cart"
-              className="block px-4 py-2 rounded-lg hover:bg-[#00B8AE]/10 hover:text-[#00B8AE] transition-all duration-300 font-bold"
-            >
-              🛒 Cart
-            </Link>
+          <div className="md:hidden mt-4 pb-6 px-6 relative animate-fade-in-up">
+            <div className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 p-6 flex flex-col gap-2">
+              <Link
+                href="/"
+                className="px-4 py-3 rounded-2xl hover:bg-teal-50 text-gray-700 hover:text-[#00B8AE] transition-all duration-300 font-black text-lg flex items-center gap-3"
+              >
+                <span>🏠</span> Home
+              </Link>
+              <Link
+                href="/products"
+                className="px-4 py-3 rounded-2xl hover:bg-teal-50 text-gray-700 hover:text-[#00B8AE] transition-all duration-300 font-black text-lg flex items-center gap-3"
+              >
+                <span>🛍️</span> Shop
+              </Link>
+              <Link
+                href="/community"
+                className="px-4 py-3 rounded-2xl hover:bg-teal-50 text-gray-700 hover:text-[#00B8AE] transition-all duration-300 font-black text-lg flex items-center gap-3"
+              >
+                <span>👥</span> Community
+              </Link>
 
-            <div className="pt-2 border-t-2 border-gray-200 space-y-2">
-              {isLoggedIn ? (
-                <>
-                  <button
-                    onClick={() => router.push("/dashboard")}
-                    className="w-full px-4 py-2 rounded-lg bg-[#00B8AE] text-white font-bold hover:shadow-lg transition-all duration-300"
-                  >
-                    📊 Dashboard
-                  </button>
-                  <button
-                    onClick={() => router.push("/dashboard/profile")}
-                    className="w-full px-4 py-2 rounded-lg bg-teal-600 text-white font-bold hover:shadow-lg transition-all duration-300"
-                  >
-                    👤 Profile
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full px-4 py-2 rounded-lg bg-red-500 text-white font-bold hover:shadow-lg transition-all duration-300"
-                  >
-                    🚪 Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/auth/Login"
-                    className="block px-4 py-2 rounded-lg border-2 border-[#00B8AE] text-[#00B8AE] font-bold hover:bg-[#00B8AE]/10 transition-all duration-300 text-center"
-                  >
-                    🔐 Login
-                  </Link>
-                  <Link
-                    href="/auth/register"
-                    className="block px-4 py-2 rounded-lg bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold hover:shadow-lg transition-all duration-300 text-center"
-                  >
-                    📝 Sign Up
-                  </Link>
-                </>
-              )}
+              <div className="pt-4 mt-2 border-t-2 border-gray-100 flex flex-col gap-3">
+                {isLoggedIn ? (
+                  <>
+                    <button
+                      onClick={() => router.push("/dashboard")}
+                      className="w-full px-6 py-4 rounded-xl bg-gray-50 text-gray-900 font-black hover:bg-[#00B8AE] hover:text-white transition-all duration-300 text-center text-lg"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-6 py-4 rounded-xl bg-rose-50 border-2 border-transparent text-rose-600 font-black hover:border-rose-200 transition-all duration-300 text-center text-lg"
+                    >
+                      Logout Session
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/Login"
+                      className="block w-full px-6 py-4 rounded-xl bg-gray-50 text-gray-900 font-black hover:bg-gray-100 transition-all duration-300 text-center text-lg"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="block w-full px-6 py-4 rounded-xl bg-[#00B8AE] text-white font-black shadow-lg shadow-teal-500/30 transition-all duration-300 text-center text-lg"
+                    >
+                      Create Account
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}

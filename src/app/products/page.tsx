@@ -66,9 +66,9 @@ function ProductsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
-      <div className="bg-linear-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-5xl font-bold mb-4">🛍️ All Products</h1>
           <p className="text-teal-100 text-lg">Discover premium sports equipment for every athlete</p>
@@ -170,7 +170,7 @@ function ProductsContent() {
               >
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-gray-100 hover:border-[#00B8AE] hover:scale-105">
                   {/* Image Container */}
-                  <div className="relative overflow-hidden bg-linear-to-br from-gray-100 to-gray-200 h-64">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 h-64">
                     {p.images?.[0] && typeof p.images[0] === 'string' && p.images[0].startsWith('http') ? (
                       <img
                         src={p.images[0]}
@@ -244,7 +244,7 @@ function ProductsContent() {
                           const result = await addToCart(p);
                           if (result.success) alert(result.message);
                         }}
-                        className="w-full bg-linear-to-r from-[#00B8AE] to-teal-500 hover:shadow-lg text-white py-3 rounded-lg transition font-bold active:scale-95 flex items-center justify-center gap-2"
+                        className="w-full bg-gradient-to-r from-[#00B8AE] to-teal-500 hover:shadow-lg text-white py-3 rounded-lg transition font-bold active:scale-95 flex items-center justify-center gap-2"
                       >
                         {p.sizes && p.sizes.length > 0 ? '👁️ View Options' : '🛒 Add to Cart'}
                       </button>

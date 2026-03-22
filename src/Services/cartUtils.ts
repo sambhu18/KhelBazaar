@@ -1,5 +1,11 @@
 import axiosInstance from "./axiosinstance";
 
+export const triggerCartUpdate = () => {
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cartUpdated'));
+    }
+};
+
 export const addToCart = async (product: any, quantity: number = 1, size: string = "", customization: { name: string, number: string } | null = null) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
@@ -12,6 +18,7 @@ export const addToCart = async (product: any, quantity: number = 1, size: string
                 size,
                 customization
             });
+            triggerCartUpdate();
             return { success: true, message: "Added to cart!" };
         } catch (error: any) {
             console.error("Add to cart API error:", error);
@@ -53,6 +60,7 @@ export const addToCart = async (product: any, quantity: number = 1, size: string
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));
+            triggerCartUpdate();
             return { success: true, message: "Added to local cart!" };
         } catch (error) {
             console.error("Local cart error:", error);

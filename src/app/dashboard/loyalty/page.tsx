@@ -49,15 +49,15 @@ export default function Loyalty() {
       case 'bronze': return { bg: 'bg-amber-100', text: 'text-amber-800', badge: 'bg-amber-500' };
       case 'silver': return { bg: 'bg-gray-100', text: 'text-gray-800', badge: 'bg-gray-400' };
       case 'gold': return { bg: 'bg-yellow-100', text: 'text-yellow-800', badge: 'bg-yellow-500' };
-      case 'platinum': return { bg: 'bg-linear-to-r from-[#00B8AE]/20 to-teal-500/20', text: 'text-[#00B8AE]', badge: 'bg-linear-to-r from-[#00B8AE] to-teal-500' };
+      case 'platinum': return { bg: 'bg-gradient-to-r from-[#00B8AE]/20 to-teal-500/20', text: 'text-[#00B8AE]', badge: 'bg-gradient-to-r from-[#00B8AE] to-teal-500' };
       default: return { bg: 'bg-gray-100', text: 'text-gray-800', badge: 'bg-gray-500' };
     }
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Hero Section */}
-      <div className="bg-linear-to-r from-[#00B8AE] via-teal-500 to-cyan-500 text-white relative overflow-hidden py-12 px-6 shadow-lg">
+      <div className="bg-gradient-to-r from-[#00B8AE] via-teal-500 to-cyan-500 text-white relative overflow-hidden py-12 px-6 shadow-lg">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -mr-48 -mt-48"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full -ml-48 -mb-48"></div>
