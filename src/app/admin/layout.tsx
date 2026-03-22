@@ -52,12 +52,12 @@ export default function AdminLayout({
           <p className="text-sm text-gray-400 mt-1">Dashboard</p>
         </div>
 
-        <nav className="mt-8 space-y-2 px-4">
-          <Link href="/admin" className="nav-link">📊 Dashboard</Link>
-          <Link href="/admin/products" className="nav-link">📦 Products</Link>
-          <Link href="/admin/orders" className="nav-link">🛒 Orders</Link>
-          <Link href="/admin/users" className="nav-link">👥 Users</Link>
-          <Link href="/admin/clubs" className="nav-link">🏆 Clubs</Link>
+        <nav className="mt-8 flex flex-col gap-2 px-4">
+          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">📊 Dashboard</Link>
+          <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">📦 Products</Link>
+          <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">🛒 Orders</Link>
+          <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">👥 Users</Link>
+          <Link href="/admin/clubs" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">🏆 Clubs</Link>
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">

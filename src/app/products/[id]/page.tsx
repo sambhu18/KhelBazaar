@@ -159,13 +159,12 @@ export default function ProductDetailPage() {
         return;
       }
 
-      const result = await addToCart({
-        ...product,
+      const result = await addToCart(
+        product,
         quantity,
-        size: selectedSize,
-        color: selectedColor,
-        customization: (product.customizable && (customization.name || customization.number)) ? customization : undefined
-      });
+        selectedSize,
+        (product.customizable && (customization.name || customization.number)) ? customization : null
+      );
       
       if (result.success) {
         alert(result.message || 'Added to cart successfully!');

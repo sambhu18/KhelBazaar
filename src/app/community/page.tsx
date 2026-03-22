@@ -20,7 +20,7 @@ export default function CommunityPage() {
       setLoading(true);
       let query = "";
       if (activeTab === "trending") query = "?sort=likes";
-      // Events/Other filters can be added here
+      if (activeTab === "events") query = "?postType=event";
       const response = await getClubPosts(query);
       setPosts(response.data);
     } catch (error) {
@@ -37,17 +37,12 @@ export default function CommunityPage() {
         formData.append("title", newPost.split("\n")[0]);
         formData.append("description", newPost);
         formData.append("category", "General");
-        // For now, using a placeholder clubId or getting it from user context if available
-        // In a real scenario, the user might select a club or it's a general community post
-        // The backend requires clubId for now based on the model
-        // If clubId is not available, we might need to adjust backend or provide a default
-        
-        // await createClubPost(formData);
-        // fetchPosts();
+        await createClubPost(formData);
+        fetchPosts();
         setNewPost("");
-        alert("Post functionality requires a selected club. Please post from a Club Dashboard for now.");
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to create post:", error);
+        alert(error.response?.data?.msg || "Failed to create post. Please make sure you are logged in.");
       }
     }
   };
@@ -67,11 +62,12 @@ export default function CommunityPage() {
 
     try {
       const response = await commentOnPost(postId, { text });
+      // The API returns the updated post, replace it in the state
       setPosts(posts.map(p => p._id === postId ? response.data.post : p));
       setCommentTexts({ ...commentTexts, [postId]: "" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add comment:", error);
-      alert("Please login to comment");
+      alert(error.response?.data?.msg || "Please login to comment");
     }
   };
 

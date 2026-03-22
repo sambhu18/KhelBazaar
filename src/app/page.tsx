@@ -64,11 +64,11 @@ export default function HomePage() {
   };
 
   const categories = [
-    { id: "all", name: "All Gear", icon: "🏆" },
-    { id: "football", name: "Football", icon: "⚽" },
-    { id: "cricket", name: "Cricket", icon: "🏏" },
-    { id: "basketball", name: "Basketball", icon: "🏀" },
-    { id: "jersey", name: "Jerseys", icon: "👕" },
+    { id: "all", name: "All Gear" },
+    { id: "football", name: "Football" },
+    { id: "cricket", name: "Cricket" },
+    { id: "basketball", name: "Basketball" },
+    { id: "jersey", name: "Jerseys" },
   ];
 
   const filteredProducts = selectedCategory === "all"
@@ -105,14 +105,14 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-6 z-20 w-full animate-fade-in-up">
           <div className="max-w-3xl">
             <span className="inline-block px-4 py-1.5 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-md border border-teal-500/30">
-              New Season 2026 Arrived
+              Welcome to Khel Bazaar
             </span>
             <h1 className="text-7xl md:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
               ELEVATE YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 text-glow">PERFORMANCE</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 text-glow">GAME TODAY</span>
             </h1>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed font-medium max-w-2xl">
-              Professional-grade gear for the athletes who never stop. Discover curated equipment engineered for champions.
+              Nepal's premier verified sports marketplace connecting athletes, clubs, and fans. Discover authentic merchandise and professional gear.
             </p>
 
             <div className="flex flex-wrap gap-5">
@@ -138,12 +138,10 @@ export default function HomePage() {
         {/* Floating Trust Badges */}
         <div className="absolute bottom-12 right-12 z-20 hidden lg:flex gap-8">
           <div className="flex items-center gap-3 text-white/70">
-            <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl">🛡️</div>
-            <div className="text-xs uppercase tracking-widest font-bold">Authentic<br />Guaranteed</div>
+            <div className="text-xs uppercase tracking-widest font-bold border-l-2 border-teal-500 pl-3">Authentic<br />Guaranteed</div>
           </div>
           <div className="flex items-center gap-3 text-white/70">
-            <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-xl">⚡</div>
-            <div className="text-xs uppercase tracking-widest font-bold">Global<br />Fast Shipping</div>
+            <div className="text-xs uppercase tracking-widest font-bold border-l-2 border-teal-500 pl-3">Fast & Reliable<br />Shipping</div>
           </div>
         </div>
       </section>
@@ -184,7 +182,6 @@ export default function HomePage() {
                   : "text-gray-500 hover:text-gray-800"
                   }`}
               >
-                <span className="text-xl mr-2">{cat.icon}</span>
                 {cat.name}
               </button>
             ))}
@@ -347,86 +344,112 @@ export default function HomePage() {
       )}
 
       {/* Grassroots Support & Donation Section */}
-      <section className="pt-8 pb-16 relative overflow-hidden bg-white transition-all duration-1000">
+      <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="relative rounded-[64px] overflow-hidden bg-gray-950 min-h-[500px] flex items-center shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)]">
-            {/* Background Image with Parallax-like feel */}
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-60 scale-105"
+          <div className="rounded-[40px] overflow-hidden bg-gray-950 shadow-2xl relative">
+            
+            {/* Background Texture */}
+             <div
+              className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay"
               style={{ backgroundImage: "url('/donation-bg.png')" }}
             ></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900/90 to-teal-950/80"></div>
 
-            <div className="relative z-20 p-12 md:p-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full reveal opacity-0 transition-all duration-1000">
-              <div className="space-y-10">
-                <span className="inline-block px-4 py-2 rounded-full bg-teal-500/20 backdrop-blur-md text-teal-400 text-xs font-black uppercase tracking-[0.3em] border border-teal-500/30">
-                  Social Impact
-                </span>
-                <h2 className="text-5xl md:text-7xl font-black text-white leading-[1.1]">
+            <div className="relative z-10 p-8 md:p-16 flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+              
+              {/* Left Content Column */}
+              <div className="flex-1 w-full space-y-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/10 border border-teal-500/20">
+                  <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+                  <span className="text-teal-400 text-xs font-black uppercase tracking-widest">Social Impact Initiative</span>
+                </div>
+                
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tighter">
                   GRASSROOTS <br />
-                  <span className="text-teal-500 italic">SUPPORT</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 italic">SUPPORT</span>
                 </h2>
-                <p className="text-xl text-gray-300 leading-relaxed max-w-md">
-                  Every piece of gear tells a story. Your contributions help us provide authentic sports equipment to young athletes in underserved communities.
+                
+                <p className="text-lg text-gray-300 leading-relaxed max-w-lg font-medium">
+                  Every piece of gear tells a story. Your contributions directly fund authentic sports equipment for young athletes in underserved communities across Nepal.
                 </p>
 
-                {/* Stats Glass Card */}
-                <div className="bg-white/5 backdrop-blur-2xl rounded-3xl p-8 border border-white/10 max-w-md">
-                  <div className="flex justify-between items-end mb-4">
-                    <span className="text-gray-400 font-bold uppercase text-xs tracking-widest">Goal: 1000 Kits</span>
-                    <span className="text-white font-black text-2xl">72%</span>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-4 lg:gap-6 pt-4">
+                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">500+</p>
+                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Kits Given</p>
                   </div>
-                  <div className="h-3 bg-white/10 rounded-full overflow-hidden mb-8">
-                    <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 w-[72%] rounded-full shadow-[0_0_20px_rgba(20,184,166,0.5)]"></div>
+                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">20+</p>
+                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Pitches</p>
                   </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <p className="text-white font-black text-xl">500+</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase">Kits</p>
-                    </div>
-                    <div className="text-center border-x border-white/10">
-                      <p className="text-white font-black text-xl">20+</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase">Pitches</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-white font-black text-xl">5k+</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase">Youth</p>
-                    </div>
+                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">5k+</p>
+                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Youth</p>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 mt-6 max-w-md">
+                   <div className="flex justify-between items-end mb-3">
+                    <span className="text-gray-400 font-bold uppercase text-xs tracking-widest">2026 Goal: 1000 Kits</span>
+                    <span className="text-teal-400 font-black text-xl">72%</span>
+                  </div>
+                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 w-[72%] rounded-full"></div>
                   </div>
                 </div>
               </div>
 
-              {/* Donation Selector Card */}
-              <div className="bg-white/10 backdrop-blur-3xl rounded-[48px] p-10 border border-white/20 shadow-2xl">
-                <h3 className="text-2xl font-black text-white mb-8">Make an Impact</h3>
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  {[100, 500, 1000, 2500].map((amount) => (
+              {/* Right Donation Column */}
+              <div className="w-full lg:w-[480px] shrink-0">
+                <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 md:p-10 border border-white/20 shadow-2xl relative overflow-hidden">
+                  {/* Decorative blur */}
+                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/20 blur-3xl rounded-full pointer-events-none"></div>
+                  
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-black text-white mb-8 flex items-center gap-3">
+                      Make an Impact
+                      <span className="grid place-content-center w-8 h-8 rounded-full bg-teal-500/20 text-teal-400 text-sm">₹</span>
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 gap-3 md:gap-4 mb-6">
+                      {[100, 500, 1000, 2500].map((amount) => (
+                        <button
+                          key={amount}
+                          onClick={() => handleDonate(amount)}
+                          className="py-4 md:py-5 rounded-2xl border border-white/10 bg-white/5 text-white font-black hover:bg-teal-500 hover:border-teal-400 transition-all active:scale-95 text-lg"
+                        >
+                          RS {amount}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="mb-8">
+                      <input
+                        type="number"
+                        placeholder="Custom Amount (RS)"
+                        className="w-full bg-black/50 border border-white/10 rounded-2xl py-4 md:py-5 px-6 text-white font-bold focus:border-teal-500 focus:bg-black/80 transition-all outline-none placeholder:text-gray-500"
+                      />
+                    </div>
+                    
                     <button
-                      key={amount}
-                      onClick={() => handleDonate(amount)}
-                      className="py-4 rounded-2xl border-2 border-white/10 text-white font-black hover:bg-teal-500 hover:border-teal-500 transition-all active:scale-95"
+                      onClick={() => handleDonate("your custom gift")}
+                      className="w-full py-5 md:py-6 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-gray-950 font-black rounded-2xl shadow-lg hover:shadow-teal-500/25 active:scale-[0.98] transition-all uppercase tracking-widest text-lg"
                     >
-                      RS {amount}
+                      Donate Now
                     </button>
-                  ))}
+                    
+                    <div className="flex items-center justify-center gap-2 text-center text-gray-400 text-xs mt-6 font-bold uppercase tracking-widest">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Secure • 100% to Grassroots
+                    </div>
+                  </div>
                 </div>
-                <div className="relative mb-10">
-                  <input
-                    type="text"
-                    placeholder="Custom Amount"
-                    className="w-full bg-black/40 border-2 border-white/10 rounded-2xl py-4 px-6 text-white font-bold focus:border-teal-500 outline-none placeholder:text-gray-600"
-                  />
-                </div>
-                <button
-                  onClick={() => handleDonate("your custom gift")}
-                  className="w-full py-6 bg-gradient-to-r from-teal-500 to-emerald-500 text-gray-900 font-black rounded-2xl shadow-xl hover:shadow-teal-500/20 active:scale-[0.98] transition-all uppercase tracking-widest"
-                >
-                  Donate Now
-                </button>
-                <p className="text-center text-gray-500 text-xs mt-6 font-medium uppercase tracking-tighter">
-                  Secure encrypted transaction • 100% to grassroots
-                </p>
               </div>
+
             </div>
           </div>
         </div>
@@ -496,24 +519,30 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div className="text-left">
-              <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-3xl mb-8">🚀</div>
+              <div className="w-8 h-8 rounded-full border-4 border-teal-500 mb-6 relative">
+                <div className="absolute inset-2 bg-teal-500 rounded-full"></div>
+              </div>
               <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">ELITE LOGISTICS</h3>
               <p className="text-gray-500 font-medium leading-relaxed">
-                Next-day delivery available for metro areas. Track your gear with precision.
+                Fast and reliable delivery available. Track your gear with precision.
               </p>
             </div>
             <div className="text-left">
-              <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl mb-8">🛡️</div>
+              <div className="w-8 h-8 rounded-full border-4 border-blue-500 mb-6 relative">
+                <div className="absolute inset-2 bg-blue-500 rounded-full"></div>
+              </div>
               <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">PRO PROTECTION</h3>
               <p className="text-gray-500 font-medium leading-relaxed">
                 12-month performance warranty on all professional gear categories.
               </p>
             </div>
             <div className="text-left">
-              <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center text-3xl mb-8">👑</div>
+               <div className="w-8 h-8 rounded-full border-4 border-purple-500 mb-6 relative">
+                <div className="absolute inset-2 bg-purple-500 rounded-full"></div>
+              </div>
               <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">ELITE LOYALTY</h3>
               <p className="text-gray-500 font-medium leading-relaxed">
-                Join our MVP program for early access to limited edition drops.
+                Join our community program for early access to limited edition drops.
               </p>
             </div>
           </div>
@@ -525,10 +554,10 @@ export default function HomePage() {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 via-cyan-500 to-purple-500"></div>
         <div className="relative z-10">
           <h2 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter uppercase italic outline-text">
-            No More Excuses.
+            Play Your Game.
           </h2>
           <p className="text-2xl text-teal-400 font-black mb-12 tracking-[0.2em] uppercase">
-            GEAR UP FOR GLORY
+            GEAR UP WITH KHEL BAZAAR
           </p>
           <button
             onClick={() => router.push('/products')}
