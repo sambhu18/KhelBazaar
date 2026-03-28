@@ -155,22 +155,16 @@ export default function ProductDetailPage() {
 
       // Validate size selection for products with variants
       if (product.variants && product.variants.length > 0 && !selectedSize) {
-        alert('Please select a size');
+        window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: 'Please select a size', type: "error" } }));
         return;
       }
 
-      const result = await addToCart(
+      await addToCart(
         product,
         quantity,
         selectedSize,
         (product.customizable && (customization.name || customization.number)) ? customization : null
       );
-      
-      if (result.success) {
-        alert(result.message || 'Added to cart successfully!');
-      } else {
-        alert(result.message || 'Failed to add to cart');
-      }
     } catch (err: any) {
       alert(err.response?.data?.msg || 'Failed to add to cart');
     } finally {
@@ -565,9 +559,7 @@ export default function ProductDetailPage() {
                     ) : product.stock === 0 ? (
                       'OUT OF STOCK'
                     ) : (
-                      <>
-                        <span className="text-2xl pt-1">🛒</span> ADD TO CART
-                      </>
+                      'ADD TO CART'
                     )}
                   </button>
 
@@ -579,7 +571,7 @@ export default function ProductDetailPage() {
                       : 'border-gray-200 text-gray-700 bg-white hover:border-rose-500 hover:text-rose-500 hover:bg-rose-50 active:scale-95'
                       }`}
                   >
-                    {actionLoading === 'wishlist' ? '...' : '♡'}
+                    {actionLoading === 'wishlist' ? '...' : 'Add to Wishlist'}
                   </button>
                 </div>
 
@@ -589,7 +581,7 @@ export default function ProductDetailPage() {
                     onClick={() => setShowRentalModal(true)}
                     className="w-full py-4 px-8 bg-black text-white rounded-xl font-black text-lg hover:bg-gray-900 transition-all duration-300 hover:shadow-xl flex items-center justify-center gap-3 active:scale-95 border border-black"
                   >
-                    📅 RENT GEAR NOW 
+                    RENT GEAR NOW 
                   </button>
                 )}
               </div>
@@ -601,27 +593,98 @@ export default function ProductDetailPage() {
         <div className="bg-white rounded-[32px] shadow-xl border border-gray-100 mb-12 overflow-hidden">
           <div className="border-b-2 border-gray-100 bg-gray-50/50">
             <nav className="flex space-x-2 px-8 pt-4 no-scrollbar overflow-x-auto">
-              {['description', 'reviews', 'specifications'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-4 px-8 font-black text-sm uppercase tracking-widest rounded-t-2xl transition-all duration-300 ${activeTab === tab
-                    ? 'bg-white text-[#00B8AE] shadow-[0_-4px_10px_rgba(0,0,0,0.02)] border-t-2 border-l-2 border-r-2 border-gray-100 border-b-0 -mb-[2px] z-10'
-                    : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100/50 border-2 border-transparent'
-                    }`}
-                >
-                  {tab}
-                </button>
-              ))}
+              {['description', 'personalization', 'reviews', 'specifications'].map((tab) => {
+                if (tab === 'personalization' && !product.customizable) return null;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`py-4 px-8 font-black text-sm uppercase tracking-widest rounded-t-2xl transition-all duration-300 ${activeTab === tab
+                      ? 'bg-white text-[#00B8AE] shadow-[0_-4px_10px_rgba(0,0,0,0.02)] border-t-2 border-l-2 border-r-2 border-gray-100 border-b-0 -mb-[2px] z-10'
+                      : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100/50 border-2 border-transparent'
+                      }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
             </nav>
           </div>
 
           <div className="p-6">
             {activeTab === 'description' && (
-              <div className="prose max-w-none">
-                <p className="text-gray-600 leading-relaxed">
+              <div className="prose max-w-none p-4">
+                <p className="text-gray-600 leading-relaxed text-lg">
                   {product.description || 'No description available.'}
                 </p>
+              </div>
+            )}
+
+            {activeTab === 'personalization' && product.customizable && (
+              <div className="p-4 md:p-8 animate-fade-in-up">
+                <div className="max-w-3xl">
+                  <h3 className="text-2xl font-black text-gray-900 mb-8 uppercase tracking-tight">Personalize Your Product <span className="text-[#00B8AE] ml-2">{product.currency} {product.customizationOptions?.customizationPrice}</span></h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                     <button 
+                       onClick={() => setCustomization({ name: '', number: '', additionalText: '' })}
+                       className={`py-5 px-8 border-2 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 ${(!customization.name && !customization.number) ? 'border-[#00B8AE] text-[#00B8AE] bg-teal-50' : 'border-gray-200 text-gray-400 hover:border-gray-300'}`}
+                     >
+                       NONE
+                     </button>
+                     <button 
+                       onClick={() => { if(!customization.name && !customization.number) setCustomization({ ...customization, name: 'PLAYER' }) }}
+                       className={`py-5 px-8 border-2 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 ${(customization.name || customization.number) ? 'border-rose-500 text-rose-500 bg-rose-50' : 'border-gray-200 text-gray-400 hover:border-gray-300'}`}
+                     >
+                       PLAYER
+                     </button>
+                  </div>
+
+                  {(customization.name || customization.number || true) && (
+                    <div className="space-y-8 p-8 bg-gray-50 rounded-[32px] border border-gray-100">
+                       <div className="flex items-center gap-4 mb-4">
+                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-2xl">👕</div>
+                         <div>
+                            <p className="font-black text-gray-900 uppercase text-xs tracking-[0.2em]">Live Preview Area</p>
+                            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Type below to see change</p>
+                         </div>
+                       </div>
+
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                         <div className="md:col-span-2">
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">NAME PRINT (MAX {product.customizationOptions?.maxNameLength})</label>
+                            <input
+                              type="text"
+                              maxLength={product.customizationOptions?.maxNameLength}
+                              value={customization.name}
+                              onChange={(e) => setCustomization({ ...customization, name: e.target.value.toUpperCase() })}
+                              className="w-full bg-white border-2 border-gray-100 rounded-2xl py-4 px-6 text-xl font-black focus:border-[#00B8AE] transition-all outline-none placeholder:text-gray-200 uppercase"
+                              placeholder="YOUR NAME"
+                            />
+                         </div>
+                         <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">NUMBER</label>
+                            <input
+                              type="number"
+                              min={product.customizationOptions?.numberRange.min}
+                              max={product.customizationOptions?.numberRange.max}
+                              value={customization.number}
+                              onChange={(e) => setCustomization({ ...customization, number: e.target.value })}
+                              className="w-full bg-white border-2 border-gray-100 rounded-2xl py-4 px-6 text-xl font-black focus:border-[#00B8AE] transition-all outline-none placeholder:text-gray-200"
+                              placeholder="00"
+                            />
+                         </div>
+                       </div>
+
+                       <div className="flex gap-4 p-4 bg-teal-50 rounded-2xl border border-teal-100">
+                          <span className="text-xl">🛡️</span>
+                          <p className="text-xs font-bold text-teal-800 leading-relaxed uppercase tracking-widest">
+                            Professional thermal-press technology. Guaranteed to last through intensive matches and washes. High-visibility athlete font style.
+                          </p>
+                       </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

@@ -4,6 +4,7 @@ import API from "@/src/Services/api";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { getImageUrl } from "@/src/Services/imgUtils";
 
 function ProductsContent() {
   const router = useRouter();
@@ -17,7 +18,6 @@ function ProductsContent() {
   const [sortBy, setSortBy] = useState("featured");
 
   useEffect(() => {
-    // Sync category and search from URL if they change
     const cat = searchParams.get("category");
     if (cat) setSelectedCategory(cat);
     
@@ -29,11 +29,10 @@ function ProductsContent() {
     const fetchProducts = async () => {
       try {
         const response = await API.get("/api/products");
-        // Ensure we always set an array
-        setProducts(response.data.products || []);
+        const productData = response.data.products || response.data || [];
+        setProducts(productData);
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        // Set empty array on error
         setProducts([]);
       } finally {
         setLoading(false);
@@ -44,12 +43,12 @@ function ProductsContent() {
 
   const categories = ["all", ...new Set((products || []).map((p: any) => p.category || "sports"))];
 
-  let filteredProducts = (products || []).filter((p: any) =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory === "all" || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()))
-  );
+  let filteredProducts = (products || []).filter((p: any) => {
+      const matchSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchCategory = selectedCategory === "all" || (p.category && p.category.toLowerCase() === selectedCategory.toLowerCase());
+      return matchSearch && matchCategory;
+  });
 
-  // Sort products
   if (sortBy === "price-low") {
     filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
   } else if (sortBy === "price-high") {
@@ -60,198 +59,91 @@ function ProductsContent() {
 
   const handleCategoryChange = (cat: string) => {
     setSelectedCategory(cat);
-    // Update URL without refresh
     const newUrl = cat === "all" ? "/products" : `/products?category=${cat}`;
     router.replace(newUrl);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6 shadow-lg">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">🛍️ All Products</h1>
-          <p className="text-teal-100 text-lg">Discover premium sports equipment for every athlete</p>
-        </div>
+      <div className="pt-[90px] px-6 mb-12">
+        <section className="relative h-[25vh] min-h-[250px] flex items-center overflow-hidden bg-black rounded-[40px] shadow-2xl">
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-40 scale-105 transition-transform duration-[10000ms]"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2073&auto=format&fit=crop')" }}
+          ></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10"></div>
+          <div className="relative max-w-7xl mx-auto px-12 z-20 w-full">
+            <h1 className="text-5xl md:text-6xl font-black text-white leading-none tracking-tight uppercase">
+              THE <span className="text-gradient text-glow">SHOP</span>
+            </h1>
+          </div>
+        </section>
       </div>
 
-      {/* Filters Section */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative">
-              <input
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8 flex flex-col md:flex-row gap-6 items-center">
+            <input
                 type="text"
-                placeholder="🔍 Search products by name..."
+                placeholder="Search premium gear..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-5 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#00B8AE] font-medium text-gray-700 placeholder-gray-500"
-              />
-            </div>
-          </div>
-
-          {/* Filter Row */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3">Category</label>
-              <div className="flex flex-wrap gap-2">
+                className="grow w-full md:w-auto px-5 py-3 border-2 border-gray-100 rounded-lg focus:border-[#00B8AE] outline-none font-medium"
+            />
+            <div className="flex bg-gray-50 p-1.5 rounded-xl border border-gray-100 overflow-x-auto no-scrollbar">
                 {categories.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => handleCategoryChange(cat)}
-                    className={`px-4 py-2 rounded-full font-medium transition ${selectedCategory === cat
-                      ? 'bg-[#00B8AE] text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                  >
-                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                  </button>
+                    <button
+                        key={cat}
+                        onClick={() => handleCategoryChange(cat)}
+                        className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? "bg-white text-[#00B8AE] shadow-md" : "text-gray-400"}`}
+                    >
+                        {cat}
+                    </button>
                 ))}
-              </div>
             </div>
-
-            {/* Sort Filter */}
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3">Sort By</label>
-              <select
+            <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-[#00B8AE] font-medium text-gray-700"
-              >
+                className="px-4 py-3 border-2 border-gray-100 rounded-lg outline-none font-bold text-xs"
+            >
                 <option value="featured">Featured</option>
                 <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Results Info */}
-        <div className="flex justify-between items-center mb-8">
-          <p className="text-gray-700 font-semibold text-lg">
-            {loading ? "Loading..." : `${filteredProducts.length} products found`}
-          </p>
-          <Link href="/products" className="text-[#00B8AE] hover:text-teal-600 font-semibold flex items-center gap-2" onClick={() => handleCategoryChange("all")}>
-            Clear Filters ✕
-          </Link>
+                <option value="price-low">Price Low-High</option>
+                <option value="price-high">Price High-Low</option>
+            </select>
         </div>
 
         {loading ? (
-          <div className="text-center py-24">
-            <div className="inline-flex flex-col items-center">
-              <div className="text-6xl mb-4 animate-spin">⏳</div>
-              <p className="text-gray-600 font-medium text-xl">Loading amazing products...</p>
-            </div>
-          </div>
+             <div className="text-center py-24 text-gray-400 font-bold uppercase tracking-widest animate-pulse">Scanning the Arena...</div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-xl shadow-sm">
-            <div className="text-6xl mb-4">🔍</div>
-            <p className="text-gray-600 font-medium text-xl mb-6">No products match your filters</p>
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                handleCategoryChange("all");
-              }}
-              className="bg-[#00B8AE] text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-600 transition"
-            >
-              Reset Filters
-            </button>
-          </div>
+            <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-gray-200 text-gray-300 font-bold italic">No gear matches your discipline.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pb-20">
             {filteredProducts.map((p: any) => (
-              <Link
-                href={`/products/${p._id}`}
-                key={p._id}
-                className="group h-full"
-              >
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden h-full flex flex-col border border-gray-100 hover:border-[#00B8AE] hover:scale-105">
-                  {/* Image Container */}
-                  <div className="relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 h-64">
-                    {p.images?.[0] && typeof p.images[0] === 'string' && p.images[0].startsWith('http') ? (
-                      <img
-                        src={p.images[0]}
-                        alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-5xl">📦</div>
-                    )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
-
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-                      <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                        SALE -20%
-                      </div>
-                    </div>
-                    <div className="absolute top-3 right-3">
-                      <div className="bg-[#00B8AE] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                        ⭐ Hot
-                      </div>
-                    </div>
-
-                    {/* Quick View Button */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button className="bg-[#00B8AE] text-white px-6 py-3 rounded-lg font-bold hover:bg-teal-600 transition transform -translate-y-2 group-hover:translate-y-0">
-                        👁️ Quick View
-                      </button>
-                    </div>
+              <div key={p._id} className="group bg-white rounded-[40px] border border-gray-100 p-5 shadow-sm transition-all duration-700 hover:shadow-2xl hover:-translate-y-4">
+                <Link href={`/products/${p._id}`} className="block">
+                  <div className="relative overflow-hidden bg-gray-50 aspect-square rounded-[32px] mb-6">
+                    <img
+                      src={getImageUrl(p.images?.[0])}
+                      alt={p.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000"
+                    />
                   </div>
-
-                  {/* Content */}
-                  <div className="p-6 flex flex-col grow">
-                    <p className="text-xs text-[#00B8AE] font-bold uppercase tracking-wider mb-2">
-                      {p.category || 'Sports'}
-                    </p>
-
-                    <h3 className="font-bold text-gray-900 text-base mb-3 group-hover:text-[#00B8AE] transition line-clamp-2 min-h-12">
-                      {p.title}
-                    </h3>
-
-                    {/* Rating */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="flex text-yellow-400 text-sm">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i}>★</span>
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-600 font-semibold">(48)</span>
-                    </div>
-
-                    {/* Price */}
-                    <div className="mt-auto">
-                      <div className="flex items-baseline gap-2 mb-4">
-                        <p className="text-2xl font-bold text-[#00B8AE]">NPR {p.price}</p>
-                        <p className="text-sm text-gray-400 line-through">NPR {Math.round(p.price * 1.25)}</p>
-                      </div>
-
-                      {/* Add to Cart Button */}
-                      <button
+                  <p className="text-[#00B8AE] text-[10px] font-black uppercase tracking-[0.2em] mb-2">{p.category || 'Sports'}</p>
+                  <h3 className="font-bold text-gray-950 text-xl mb-4 group-hover:text-[#00B8AE] transition line-clamp-2">{p.title}</h3>
+                  <div className="flex items-center justify-between">
+                     <p className="text-2xl font-black text-gray-950">NPR {p.price}</p>
+                     <button
                         onClick={async (e) => {
-                          e.preventDefault();
-
-                          if (p.sizes && p.sizes.length > 0) {
-                            router.push(`/products/${p._id}`);
-                            return;
-                          }
-
+                          e.preventDefault(); e.stopPropagation();
+                          if (p.sizes?.length > 0) { router.push(`/products/${p._id}`); return; }
                           const { addToCart } = await import("@/src/Services/cartUtils");
-                          const result = await addToCart(p);
-                          if (result.success) alert(result.message);
+                          await addToCart(p);
                         }}
-                        className="w-full bg-gradient-to-r from-[#00B8AE] to-teal-500 hover:shadow-lg text-white py-3 rounded-lg transition font-bold active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        {p.sizes && p.sizes.length > 0 ? '👁️ View Options' : '🛒 Add to Cart'}
-                      </button>
-                    </div>
+                        className="w-12 h-12 rounded-full bg-gray-950 text-white flex items-center justify-center font-bold text-lg hover:bg-[#00B8AE] transition-all active:scale-90"
+                      >+</button>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         )}
@@ -262,7 +154,7 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+    <Suspense fallback={<div className="p-10 text-center uppercase font-black tracking-widest text-gray-300">Loading Elite Gears...</div>}>
       <ProductsContent />
     </Suspense>
   );

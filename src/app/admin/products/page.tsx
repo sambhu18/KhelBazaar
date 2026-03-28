@@ -144,7 +144,9 @@ export default function AdminProductsPage() {
       resetForm();
       fetchProducts();
     } catch (error: any) {
-      setErrorMsg(error?.response?.data?.msg || "Failed to save product");
+      const msg = error?.response?.data?.msg || "Failed to save product";
+      const detail = error?.response?.data?.error;
+      setErrorMsg(detail ? `${msg}: ${detail}` : msg);
     } finally {
       setLoading(false);
     }

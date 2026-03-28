@@ -60,7 +60,7 @@ export default function Dashboard() {
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          <h1 className="text-5xl font-bold mb-2">📊 Products Dashboard</h1>
+          <h1 className="text-5xl font-bold mb-2 uppercase tracking-tighter">Inventory Dashboard</h1>
           <p className="text-teal-100 text-lg">Manage and explore your product inventory</p>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function Dashboard() {
           {/* Error Message */}
           {error && (
             <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 font-medium">
-              ⚠️ {error}
+              {error}
             </div>
           )}
 
@@ -129,8 +129,7 @@ export default function Dashboard() {
             </div>
           ) : displayProducts.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-              <p className="text-3xl mb-2">📦</p>
-              <p className="text-gray-500 text-lg font-medium">No products found</p>
+              <p className="text-gray-500 text-lg font-medium">No products found in this category.</p>
             </div>
           ) : (
             /* Products Grid */
@@ -216,7 +215,7 @@ export default function Dashboard() {
                       }`}
                     disabled={product.stock === 0}
                   >
-                    {product.stock > 0 ? (product.sizes && product.sizes.length > 0 ? '�️ View Options' : '�🛒 Add to Cart') : 'Out of Stock'}
+                    {product.stock > 0 ? (product.sizes && product.sizes.length > 0 ? 'View Options' : 'Add to Cart') : 'Out of Stock'}
                   </button>
                 </div>
               ))}

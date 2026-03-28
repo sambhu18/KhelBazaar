@@ -156,7 +156,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-8">
@@ -183,13 +183,13 @@ export default function CartPage() {
             <p className="text-gray-600">Loading your cart...</p>
           </div>
         ) : cartItems.length === 0 ? (
-              <div className="text-center py-12">
+          <div className="text-center py-12">
             <p className="text-gray-600 text-lg mb-4">Your cart is empty</p>
             <Link
               href="/products"
               className="inline-block px-10 py-4 bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white font-bold rounded-xl hover:shadow-lg transition-all"
             >
-              Continue Shopping 🏃
+              Continue Shopping
             </Link>
           </div>
         ) : (
@@ -299,7 +299,7 @@ export default function CartPage() {
                   onClick={() => router.push("/checkout")}
                   className="w-full py-4 bg-gradient-to-r from-[#00B8AE] to-teal-500 hover:shadow-lg text-white font-black rounded-xl transition-all mb-4 text-lg"
                 >
-                  Proceed to Checkout →
+                  Proceed to Checkout
                 </button>
 
                 <Link

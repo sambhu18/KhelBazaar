@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import axiosInstance from "@/src/Services/axiosinstance";
+import { getImageUrl } from "@/src/Services/imgUtils";
 
 export default function HomePage() {
   const router = useRouter();
@@ -17,24 +18,9 @@ export default function HomePage() {
     fetchProducts();
     fetchRentals();
     fetchRecentGear();
-
-    // Scroll Animation Observer
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-in-up');
-          entry.target.classList.remove('opacity-0');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
+    // Force all reveal elements active
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
   }, []);
-
-  const handleDonate = (amount: number | string) => {
-    alert(`Thank you for your generous donation of ${typeof amount === 'number' ? 'RS ' + amount : amount}! Together, we're changing grassroots sports. ❤️`);
-  };
 
   const fetchRecentGear = () => {
     if (typeof window !== 'undefined') {
@@ -63,279 +49,191 @@ export default function HomePage() {
     }
   };
 
-  const categories = [
-    { id: "all", name: "All Gear" },
-    { id: "football", name: "Football" },
-    { id: "cricket", name: "Cricket" },
-    { id: "basketball", name: "Basketball" },
-    { id: "jersey", name: "Jerseys" },
-  ];
-
-  const filteredProducts = selectedCategory === "all"
-    ? products
-    : products.filter(p => {
-      if (Array.isArray(p.categories)) {
-        return p.categories.some((c: string) => c.toLowerCase() === selectedCategory.toLowerCase());
-      }
-      return p.categories?.toLowerCase().includes(selectedCategory.toLowerCase());
-    });
-
-  const displayProducts = filteredProducts.slice(0, 8);
-
-  const getImageUrl = (imagePath: string | undefined) => {
-    if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
-    if (imagePath.startsWith("http")) return imagePath;
-    return `http://localhost:5000${imagePath}`;
+  const handleDonate = (amount: number | string) => {
+    alert(`Thank you for your generous donation of ${typeof amount === 'number' ? 'RS ' + amount : amount}! Together, we're changing grassroots sports. ❤️`);
   };
+
+  const categories = [
+    { id: "football", name: "Football", sub: "Elite Pitch Gear", icon: "⚽", img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2093&auto=format&fit=crop" },
+    { id: "cricket", name: "Cricket", sub: "Pro Match Kits", icon: "🏏", img: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2070&auto=format&fit=crop" },
+    { id: "basketball", name: "Basketball", sub: "Elite Court Gear", icon: "🏀", img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop" },
+    { id: "jersey", name: "Jerseys", sub: "Custom Team Kits", icon: "👕", img: "https://images.unsplash.com/photo-1588698943485-618828062534?q=80&w=2070&auto=format&fit=crop" },
+  ];
 
   return (
     <div className="min-h-screen bg-white selection:bg-teal-500 selection:text-white">
-      {/* Premium Hero Section */}
-      <section className="relative h-[85vh] min-h-[700px] flex items-center overflow-hidden bg-black">
-        {/* Background Image with Parallax-like Scroll */}
+      {/* Cinematic Hero */}
+      <section className="relative h-[90vh] min-h-[750px] flex items-center overflow-hidden bg-black">
+        {/* Animated Background Overlay */}
+        <div className="absolute inset-0 bg-[#00B8AE]/5 z-10 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-teal-500/20 blur-[120px] rounded-full animate-float"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
+        </div>
+
+        {/* Ultra Premium Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60 scale-105 transition-transform duration-[10000ms] ease-linear hover:scale-110"
-          style={{ backgroundImage: "url('/hero-banner.png')" }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 scale-100 transition-transform duration-[20000ms] ease-linear hover:scale-110"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?q=80&w=2070&auto=format&fit=crop')" }}
         ></div>
 
-        {/* Cinematic Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black/20 z-10"></div>
 
-        <div className="relative max-w-7xl mx-auto px-6 z-20 w-full animate-fade-in-up">
-          <div className="max-w-3xl">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-md border border-teal-500/30">
-              Welcome to Khel Bazaar
-            </span>
-            <h1 className="text-7xl md:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
-              ELEVATE YOUR <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400 text-glow">GAME TODAY</span>
+        <div className="relative max-w-7xl mx-auto px-6 z-20 w-full pt-14">
+          <div className="max-w-4xl space-y-10">
+            <div className="reveal active inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-teal-500/10 border border-teal-500/20 backdrop-blur-3xl shadow-2xl">
+              <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-ping"></span>
+              <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.3em]">Nepal's Elite Sports Portal</span>
+            </div>
+            
+            <h1 className="reveal active text-[100px] md:text-[140px] font-black text-white leading-[0.75] tracking-tight hover:tracking-tighter transition-all duration-1000 uppercase">
+              REDEFINE <br />
+              <span className="text-gradient text-glow">PERFORMANCE.</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-10 leading-relaxed font-medium max-w-2xl">
-              Nepal's premier verified sports marketplace connecting athletes, clubs, and fans. Discover authentic merchandise and professional gear.
+            
+            <p className="reveal active text-2xl md:text-3xl text-gray-400 leading-relaxed font-bold max-w-3xl border-l-[6px] border-[#00B8AE] pl-8">
+              Experience the pinnacle of sports engineering. We bridge the gap between grassroots passion and professional excellence.
             </p>
 
-            <div className="flex flex-wrap gap-5">
+            <div className="reveal active flex flex-wrap gap-8 pt-6">
               <button
                 onClick={() => router.push('/products')}
-                className="group relative px-10 py-5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white rounded-2xl font-black text-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] transform hover:-translate-y-1"
+                className="group relative px-14 py-6 bg-[#00B8AE] text-white rounded-2xl font-black text-xl transition-all duration-500 hover:bg-teal-400 hover:shadow-[0_25px_60px_rgba(0,184,174,0.4)] transform hover:-translate-y-2 active:scale-95 overflow-hidden"
               >
-                <span className="relative z-10 flex items-center gap-2">
-                  SHOP COLLECTION <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <span className="relative z-10 flex items-center gap-3 italic">
+                  GEAR UP NOW <span className="text-2xl">⚡</span>
                 </span>
+                <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
               </button>
 
               <button
                 onClick={() => router.push('/community')}
-                className="px-10 py-5 glass-effect text-white rounded-2xl font-bold text-lg hover:bg-white/10 transition-all duration-300 border border-white/20"
+                className="px-14 py-6 bg-white/5 backdrop-blur-xl text-white border-2 border-white/10 rounded-2xl font-black text-xl hover:bg-white/10 transition-all duration-500 transform hover:-translate-y-2 active:scale-95 shadow-2xl"
               >
-                JOIN THE ELITE
+                THE COMMUNITY
               </button>
             </div>
           </div>
         </div>
 
-        {/* Floating Trust Badges */}
-        <div className="absolute bottom-12 right-12 z-20 hidden lg:flex gap-8">
-          <div className="flex items-center gap-3 text-white/70">
-            <div className="text-xs uppercase tracking-widest font-bold border-l-2 border-teal-500 pl-3">Authentic<br />Guaranteed</div>
-          </div>
-          <div className="flex items-center gap-3 text-white/70">
-            <div className="text-xs uppercase tracking-widest font-bold border-l-2 border-teal-500 pl-3">Fast & Reliable<br />Shipping</div>
+        {/* Floating Social Proof */}
+        <div className="absolute bottom-12 right-12 z-20 hidden lg:block reveal active">
+          <div className="glass-card-dark p-6 rounded-3xl border border-white/10 flex items-center gap-5 shadow-3xl">
+             <div className="flex -space-x-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="w-12 h-12 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center font-bold text-xs text-white">U{i}</div>
+                ))}
+                <div className="w-12 h-12 rounded-full border-2 border-black bg-teal-500 flex items-center justify-center font-bold text-xs text-black shadow-lg shadow-teal-500/40">+25k</div>
+             </div>
+             <div className="text-sm">
+                <p className="text-white font-black">Elite Athletes</p>
+                <p className="text-teal-400 font-bold text-xs">JOIN THE REVOLUTION</p>
+             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats Counter - Floating Section */}
-      <div className="relative z-30 -mt-20 max-w-6xl mx-auto px-6">
-        <div className="glass-effect-dark backdrop-blur-2xl rounded-[32px] p-10 grid grid-cols-2 md:grid-cols-4 gap-8 border border-white/10 shadow-2xl">
+      {/* Stats Counter */}
+      <div className="relative z-30 -mt-20 max-w-7xl mx-auto px-6">
+        <div className="glass-card-dark rounded-[50px] p-16 grid grid-cols-2 lg:grid-cols-4 gap-16 border border-white/10 shadow-3xl">
           {[
-            { label: "Elite Products", value: products.length > 0 ? `${products.length}+` : "150+", color: "text-teal-400" },
-            { label: "Active Athletes", value: "12K+", color: "text-blue-400" },
-            { label: "Pro Rating", value: "4.9", color: "text-yellow-400" },
-            { label: "Clubs Partnered", value: "85+", color: "text-purple-400" }
+            { label: "Elite Gear", value: "2.5K+", color: "text-white", icon: "💎" },
+            { label: "Pro Venues", value: "150+", color: "text-[#00B8AE]", icon: "🏟️" },
+            { label: "Global Reach", value: "12+", color: "text-white", icon: "🌎" },
+            { label: "Elite Clubs", value: "95+", color: "text-[#00B8AE]", icon: "🤝" }
           ].map((stat, i) => (
-            <div key={i} className="text-center group cursor-default">
-              <p className={`text-3xl md:text-4xl font-black mb-1 transition-transform group-hover:scale-110 ${stat.color}`}>
+            <div key={i} className="text-center group">
+              <div className="text-4xl mb-4 animate-float" style={{ animationDelay: `${i*0.5}s` }}>{stat.icon}</div>
+              <p className={`text-5xl lg:text-7xl font-black mb-3 transition-transform group-hover:scale-110 ${stat.color}`}>
                 {stat.value}
               </p>
-              <p className="text-gray-400 text-sm font-bold uppercase tracking-wider">{stat.label}</p>
+              <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em]">{stat.label}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Categories Modern Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-24 pb-0">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-          <div className="max-w-xl">
-            <h2 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">Browse Excellence</h2>
-            <p className="text-gray-500 text-lg font-medium">Select your discipline and discover tools built for your game.</p>
+      {/* THE COLLECTION */}
+      <section className="py-32 overflow-hidden bg-gray-50/50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12 reveal active">
+            <div className="max-w-3xl">
+              <div className="w-24 h-2 bg-[#00B8AE] mb-10 rounded-full"></div>
+              <h2 className="text-7xl md:text-[100px] font-black text-gray-950 leading-none tracking-tighter uppercase mb-4">
+                THE <br />
+                <span className="text-[#00B8AE] italic">COLLECTION</span>
+              </h2>
+            </div>
+            <Link href="/products" className="group flex items-center gap-5 text-gray-900 font-black text-sm tracking-widest uppercase hover:text-[#00B8AE] transition-all">
+              EXPLORE ALL DISCIPLINES
+              <span className="w-16 h-16 rounded-full border-2 border-gray-900 group-hover:border-[#00B8AE] flex items-center justify-center transition-all bg-white shadow-xl">
+                <span className="text-2xl group-hover:translate-x-2 transition-transform">→</span>
+              </span>
+            </Link>
           </div>
-          <div className="flex bg-gray-100 p-1.5 rounded-2xl overflow-x-auto no-scrollbar">
-            {categories.map((cat) => (
-              <button
+
+          {/* Large Category Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+            {categories.map((cat, i) => (
+              <div
                 key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-8 py-4 rounded-xl font-bold transition-all duration-300 min-w-[140px] ${selectedCategory === cat.id
-                  ? "bg-white text-teal-600 shadow-xl scale-105 z-10"
-                  : "text-gray-500 hover:text-gray-800"
-                  }`}
+                onClick={() => router.push(`/products?category=${cat.id}`)}
+                className="group relative h-[600px] rounded-[50px] overflow-hidden cursor-pointer shadow-2xl transition-all duration-700 hover:-translate-y-4 hover:shadow-teal-500/20"
               >
-                {cat.name}
-              </button>
+                <img
+                  src={cat.img}
+                  alt={cat.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 grayscale group-hover:grayscale-0"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent z-10 transition-opacity group-hover:opacity-90"></div>
+                
+                <div className="absolute bottom-12 left-12 z-20">
+                  <p className="text-teal-400 font-black text-4xl mb-3 opacity-0 group-hover:opacity-100 transition-all">{cat.icon}</p>
+                  <h3 className="text-4xl font-black text-white uppercase tracking-tighter mb-2 group-hover:text-[#00B8AE] transition-colors">{cat.name}</h3>
+                  <p className="text-gray-400 font-bold text-sm tracking-widest uppercase mb-8 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all">{cat.sub}</p>
+                  <div className="w-12 h-1.5 bg-[#00B8AE] rounded-full group-hover:w-full transition-all duration-700"></div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-
-        {/* Featured Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          {loading ? (
-            [...Array(8)].map((_, i) => (
-              <div key={i} className="space-y-6">
-                <div className="bg-gray-100 aspect-[4/5] rounded-[32px] animate-pulse"></div>
-                <div className="h-6 bg-gray-100 rounded-full w-3/4 animate-pulse"></div>
-                <div className="h-4 bg-gray-100 rounded-full w-1/2 animate-pulse"></div>
-              </div>
-            ))
-          ) : displayProducts.length === 0 ? (
-            <div className="col-span-full py-20 text-center bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-200">
-              <p className="text-2xl text-gray-400 font-bold italic">No gear found in this sector.</p>
-            </div>
-          ) : (
-            displayProducts.map((p: any) => (
-              <div
-                key={p._id}
-                className="group relative bg-white rounded-[32px] border border-gray-100 p-4 transition-all duration-500 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-4"
-              >
-                <Link href={`/products/${p._id}`} className="block overflow-hidden rounded-[24px] bg-gray-50 h-72 mb-6">
-                  <img
-                    src={getImageUrl(p.images?.[0])}
-                    alt={p.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute top-8 left-8 flex flex-col gap-2">
-                    {p.newArrival && (
-                      <span className="bg-teal-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                        New Arrival
-                      </span>
-                    )}
-                    {p.trending && (
-                      <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                        Trending
-                      </span>
-                    )}
-                  </div>
-                </Link>
-
-                <div className="px-2">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 truncate group-hover:text-teal-600 transition-colors">
-                    {p.title}
-                  </h3>
-                  <div className="flex items-center gap-1 mb-6">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className={`text-xs ${i < Math.floor(p.averageRating || 4) ? "text-yellow-400" : "text-gray-200"}`}>★</span>
-                    ))}
-                    <span className="text-[10px] font-bold text-gray-400 ml-1">{p.averageRating || '4.0'} ({p.totalReviews || '12'} Reviews)</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Price</span>
-                      <p className="text-2xl font-black text-gray-900">{p.currency || 'NPR'} {p.price}</p>
-                    </div>
-                    <button
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if ((p.variants && p.variants.length > 0) || (p.sizes && p.sizes.length > 0)) {
-                          router.push(`/products/${p._id}`);
-                          return;
-                        }
-                        const { addToCart } = await import("@/src/Services/cartUtils");
-                        const result = await addToCart(p);
-                        if (result.success) {
-                          alert(result.message);
-                        } else {
-                          alert(`Error: ${result.message}`);
-                        }
-                      }}
-                      className="w-14 h-14 rounded-2xl bg-gray-900 text-white flex items-center justify-center transition-all duration-300 hover:bg-teal-500 hover:shadow-[0_10px_20px_rgba(20,184,166,0.3)] active:scale-95"
-                    >
-                      <span className="text-xl font-bold">+</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="text-center mt-8">
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 group text-xl font-black text-gray-900 border-b-4 border-teal-500 pb-1 hover:text-teal-600 transition-all"
-          >
-            DISCOVER ALL GEAR <span className="group-hover:translate-x-2 transition-transform">→</span>
-          </Link>
-        </div>
       </section>
 
-      {/* Elite Rentals Section */}
+      {/* Elite Rentals Section (Restored) */}
       {rentalProducts.length > 0 && (
-        <section className="py-12 bg-gray-900 overflow-hidden relative transition-all duration-1000">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-teal-500/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-
+        <section className="py-32 bg-gray-950 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-[#00B8AE]/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-20">
-              <div className="max-w-2xl">
-                <span className="text-teal-400 font-black uppercase tracking-[0.2em] mb-4 block">Flexibility & Performance</span>
-                <h2 className="text-5xl md:text-7xl font-black text-white leading-tight mb-8">
-                  ELITE <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 font-outline-2">RENTALS</span>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-24 gap-12 reveal active">
+              <div className="max-w-3xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 mb-6">
+                  <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.2em]">Flexibility & Performance</span>
+                </div>
+                <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.85] tracking-tight uppercase">
+                  ELITE <br /><span className="text-gradient text-glow">RENTALS</span>
                 </h2>
-                <p className="text-xl text-gray-400 leading-relaxed">
-                  Access professional-grade sports equipment without the long-term commitment. Perfect for tournaments, seasonal training, or trial periods.
-                </p>
               </div>
-              <Link href="/products?isRentable=true" className="mt-10 md:mt-0 flex items-center gap-3 text-white font-bold group">
-                <span className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center group-hover:border-teal-500 transition-colors">
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </span>
+              <Link href="/products?isRentable=true" className="group flex items-center gap-4 text-white font-black text-xs tracking-widest uppercase">
                 VIEW ALL RENTALS
               </Link>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {rentalProducts.slice(0, 3).map((p: any) => (
-                <div key={p._id} className="group bg-gray-800/50 backdrop-blur-md rounded-[40px] border border-gray-700/50 p-6 transition-all duration-500 hover:border-teal-500/50">
-                  <Link href={`/products/${p._id}`} className="block relative aspect-[4/5] rounded-[32px] overflow-hidden mb-8">
+                <div key={p._id} className="group reveal active bg-white/5 backdrop-blur-md rounded-[48px] border border-white/10 p-6 transition-all duration-700 hover:border-[#00B8AE]/30">
+                  <Link href={`/products/${p._id}`} className="block relative aspect-[4/5] rounded-[36px] overflow-hidden mb-8">
                     <img
                       src={getImageUrl(p.images?.[0])}
                       alt={p.title}
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"></div>
-                    <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
-                      <div>
-                        <p className="text-teal-400 font-bold text-sm mb-1">Starting from</p>
-                        <p className="text-2xl font-black text-white">{p.currency || 'NPR'} {p.rentalPrice?.daily}<span className="text-xs text-gray-400 font-normal ml-1">/ day</span></p>
-                      </div>
-                      <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl text-[10px] text-white font-black uppercase tracking-widest border border-white/10">
-                        Gear Rental
-                      </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute bottom-6 left-6 right-6">
+                        <p className="text-[#00B8AE] font-black text-xs uppercase tracking-widest mb-1">Rental</p>
+                        <p className="text-2xl font-black text-white leading-none">{p.currency || 'NPR'} {p.rentalPrice?.daily}<span className="text-[10px] text-gray-400 font-bold ml-1 uppercase">/ day</span></p>
                     </div>
                   </Link>
-                  <div className="px-2">
-                    <h3 className="text-2xl font-bold text-white mb-4">{p.title}</h3>
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/products/${p._id}`}
-                        className="flex-1 py-4 bg-teal-500 text-gray-900 rounded-2xl font-black text-center text-sm transition-all hover:bg-teal-400 active:scale-95"
-                      >
-                        BOOK NOW
-                      </Link>
-                    </div>
-                  </div>
+                  <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tight truncate">{p.title}</h3>
+                  <button className="w-full py-4 bg-white text-black rounded-2xl font-black text-xs tracking-widest uppercase transition-all duration-500 hover:bg-[#00B8AE] hover:text-white">BOOK GEAR NOW</button>
                 </div>
               ))}
             </div>
@@ -343,143 +241,66 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Grassroots Support & Donation Section */}
-      <section className="py-20 bg-white border-t border-gray-100">
+      {/* Grassroots Support & Donation (Restored) */}
+      <section className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="rounded-[40px] overflow-hidden bg-gray-950 shadow-2xl relative">
-            
-            {/* Background Texture */}
-             <div
-              className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay"
-              style={{ backgroundImage: "url('/donation-bg.png')" }}
-            ></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900/90 to-teal-950/80"></div>
-
-            <div className="relative z-10 p-8 md:p-16 flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
-              
-              {/* Left Content Column */}
-              <div className="flex-1 w-full space-y-8">
+          <div className="rounded-[60px] overflow-hidden bg-gray-950 shadow-2xl relative p-12 md:p-24 flex flex-col lg:flex-row gap-16 items-center">
+             <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900/90 to-teal-950/80"></div>
+             
+             <div className="relative z-10 flex-1 space-y-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/10 border border-teal-500/20">
                   <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-                  <span className="text-teal-400 text-xs font-black uppercase tracking-widest">Social Impact Initiative</span>
+                  <span className="text-teal-400 text-[10px] font-black uppercase tracking-widest">Grassroots Initiative</span>
                 </div>
-                
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tighter">
-                  GRASSROOTS <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400 italic">SUPPORT</span>
+                <h2 className="text-6xl font-black text-white leading-tight uppercase tracking-tighter">
+                  GIVING BACK <br />
+                  <span className="text-[#00B8AE] italic">TO THE GAME</span>
                 </h2>
-                
-                <p className="text-lg text-gray-300 leading-relaxed max-w-lg font-medium">
-                  Every piece of gear tells a story. Your contributions directly fund authentic sports equipment for young athletes in underserved communities across Nepal.
-                </p>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-4 lg:gap-6 pt-4">
-                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
-                    <p className="text-3xl md:text-4xl font-black text-white mb-1">500+</p>
-                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Kits Given</p>
-                  </div>
-                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
-                    <p className="text-3xl md:text-4xl font-black text-white mb-1">20+</p>
-                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Pitches</p>
-                  </div>
-                  <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/10 text-center">
-                    <p className="text-3xl md:text-4xl font-black text-white mb-1">5k+</p>
-                    <p className="text-xs text-teal-400 font-bold uppercase tracking-widest">Youth</p>
-                  </div>
+                <p className="text-xl text-gray-400 leading-relaxed font-bold">Your contributions fund professional equipment for youth athletes across Nepal.</p>
+                <div className="grid grid-cols-3 gap-6 pt-4">
+                   <div className="text-center bg-white/5 p-6 rounded-3xl border border-white/10">
+                      <p className="text-4xl font-black text-white mb-1">500+</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Kits</p>
+                   </div>
+                   <div className="text-center bg-white/5 p-6 rounded-3xl border border-white/10">
+                      <p className="text-4xl font-black text-white mb-1">20+</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Places</p>
+                   </div>
+                   <div className="text-center bg-white/5 p-6 rounded-3xl border border-white/10">
+                      <p className="text-4xl font-black text-white mb-1">5K+</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Youth</p>
+                   </div>
                 </div>
-                
-                {/* Progress Bar */}
-                <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 mt-6 max-w-md">
-                   <div className="flex justify-between items-end mb-3">
-                    <span className="text-gray-400 font-bold uppercase text-xs tracking-widest">2026 Goal: 1000 Kits</span>
-                    <span className="text-teal-400 font-black text-xl">72%</span>
-                  </div>
-                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 w-[72%] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
+             </div>
 
-              {/* Right Donation Column */}
-              <div className="w-full lg:w-[480px] shrink-0">
-                <div className="bg-white/10 backdrop-blur-xl rounded-[32px] p-8 md:p-10 border border-white/20 shadow-2xl relative overflow-hidden">
-                  {/* Decorative blur */}
-                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/20 blur-3xl rounded-full pointer-events-none"></div>
-                  
-                  <div className="relative z-10">
-                    <h3 className="text-2xl font-black text-white mb-8 flex items-center gap-3">
-                      Make an Impact
-                      <span className="grid place-content-center w-8 h-8 rounded-full bg-teal-500/20 text-teal-400 text-sm">₹</span>
-                    </h3>
-                    
-                    <div className="grid grid-cols-2 gap-3 md:gap-4 mb-6">
-                      {[100, 500, 1000, 2500].map((amount) => (
-                        <button
-                          key={amount}
-                          onClick={() => handleDonate(amount)}
-                          className="py-4 md:py-5 rounded-2xl border border-white/10 bg-white/5 text-white font-black hover:bg-teal-500 hover:border-teal-400 transition-all active:scale-95 text-lg"
-                        >
-                          RS {amount}
-                        </button>
+             <div className="relative z-10 w-full lg:w-[400px]">
+                <div className="bg-white/10 backdrop-blur-xl rounded-[40px] p-10 border border-white/20 shadow-2xl">
+                   <h3 className="text-2xl font-black text-white mb-10 uppercase tracking-tighter">Donate Now</h3>
+                   <div className="grid grid-cols-2 gap-4 mb-10">
+                      {[100, 500, 1000, 2500].map(amt => (
+                         <button key={amt} onClick={() => handleDonate(amt)} className="py-5 rounded-2xl border border-white/10 bg-white/5 text-white font-black hover:bg-[#00B8AE] transition-all">RS {amt}</button>
                       ))}
-                    </div>
-                    
-                    <div className="mb-8">
-                      <input
-                        type="number"
-                        placeholder="Custom Amount (RS)"
-                        className="w-full bg-black/50 border border-white/10 rounded-2xl py-4 md:py-5 px-6 text-white font-bold focus:border-teal-500 focus:bg-black/80 transition-all outline-none placeholder:text-gray-500"
-                      />
-                    </div>
-                    
-                    <button
-                      onClick={() => handleDonate("your custom gift")}
-                      className="w-full py-5 md:py-6 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-gray-950 font-black rounded-2xl shadow-lg hover:shadow-teal-500/25 active:scale-[0.98] transition-all uppercase tracking-widest text-lg"
-                    >
-                      Donate Now
-                    </button>
-                    
-                    <div className="flex items-center justify-center gap-2 text-center text-gray-400 text-xs mt-6 font-bold uppercase tracking-widest">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      Secure • 100% to Grassroots
-                    </div>
-                  </div>
+                   </div>
+                   <button onClick={() => handleDonate("your gift")} className="w-full py-6 bg-[#00B8AE] text-white font-black rounded-2xl shadow-xl hover:shadow-teal-500/40">GIVE THE GIFT OF SPORT</button>
                 </div>
-              </div>
-
-            </div>
+             </div>
           </div>
         </div>
       </section>
 
-      {/* Recently Viewed Gear Section */}
+      {/* Recently Viewed Gear (Restored) */}
       {recentlyViewed.length > 0 && (
-        <section className="py-16 bg-white overflow-hidden transition-all duration-1000">
+        <section className="py-24 bg-gray-50 border-y border-gray-100">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center gap-6 mb-12">
-              <h2 className="text-4xl font-black text-gray-900">RECENTLY <span className="text-teal-500">VIEWED</span></h2>
-              <div className="h-0.5 flex-1 bg-gray-100"></div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <h2 className="text-3xl font-black text-gray-950 mb-16 uppercase italic">Back on your radar</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-8">
               {recentlyViewed.slice(0, 5).map((p: any) => (
-                <Link
-                  key={`recent-${p._id}`}
-                  href={`/products/${p._id}`}
-                  className="group block"
-                >
-                  <div className="aspect-square rounded-[24px] overflow-hidden bg-gray-50 mb-4 border border-gray-100 transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-2">
-                    <img
-                      src={getImageUrl(p.images?.[0])}
-                      alt={p.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                <Link key={p._id} href={`/products/${p._id}`} className="group">
+                  <div className="aspect-square rounded-[32px] overflow-hidden bg-white mb-6 border border-gray-200 shadow-sm group-hover:shadow-xl group-hover:-translate-y-2 transition-all duration-500">
+                    <img src={getImageUrl(p.images?.[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-[1s]" />
                   </div>
                   <h4 className="font-bold text-gray-900 truncate px-2">{p.title}</h4>
-                  <p className="text-teal-600 font-black px-2">{p.currency || 'NPR'} {p.price}</p>
+                  <p className="text-[#00B8AE] font-black px-2">{p.currency || 'NPR'} {p.price}</p>
                 </Link>
               ))}
             </div>
@@ -487,26 +308,23 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Professional Promo Section */}
-      <section className="py-16 px-6 overflow-hidden transition-all duration-1000">
-        <div className="max-w-7xl mx-auto rounded-[48px] overflow-hidden bg-gray-950 relative min-h-[500px] flex items-center">
+      {/* Jersey Promo Section (Restored) */}
+      <section className="py-32 px-6">
+        <div className="max-w-7xl mx-auto rounded-[60px] overflow-hidden bg-gray-950 relative min-h-[550px] flex items-center shadow-3xl">
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-1000"
-            style={{ backgroundImage: "url('/jersey-promo.png')" }}
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1547941126-3d5322b218b0?q=80&w=1974&auto=format&fit=crop')" }}
           ></div>
           <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/80 to-transparent z-10"></div>
-
-          <div className="relative z-20 p-12 md:p-24 max-w-2xl">
-            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
-              PUT YOUR NAME <br />
-              ON THE LINE.
+          <div className="relative z-20 p-12 md:p-32 max-w-4xl">
+            <h2 className="text-6xl md:text-[80px] font-black text-white mb-10 leading-[0.85] uppercase tracking-tighter">
+              BEYOND THE <br />
+              <span className="text-gradient text-glow italic">APPAREL.</span>
             </h2>
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed font-medium">
-              Elite jersey customization with professional thermal-press technology. Wear your identity with pride.
-            </p>
+            <p className="text-2xl text-gray-400 mb-12 leading-relaxed font-bold max-w-2xl">Elite jersey customization with professional thermal-press technology.</p>
             <button
               onClick={() => router.push('/products?category=jersey')}
-              className="px-10 py-5 bg-white text-black rounded-2xl font-black text-lg hover:bg-teal-400 hover:text-white transition-all duration-300 shadow-2xl"
+              className="px-16 py-7 bg-white text-black rounded-[24px] font-black text-xl hover:bg-[#00B8AE] hover:text-white transition-all duration-500"
             >
               START CUSTOMIZING NOW
             </button>
@@ -515,58 +333,48 @@ export default function HomePage() {
       </section>
 
       {/* Trust Pillars */}
-      <section className="bg-white py-24 border-t border-gray-100">
+      <section className="bg-white py-32 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-            <div className="text-left">
-              <div className="w-8 h-8 rounded-full border-4 border-teal-500 mb-6 relative">
-                <div className="absolute inset-2 bg-teal-500 rounded-full"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
+            {[
+              { title: "ELITE DELIVERY", desc: "Express logistics across all major districts.", color: "bg-teal-500" },
+              { title: "PRO WARRANTY", desc: "12-month performance guarantee.", color: "bg-blue-500" },
+              { title: "INSIDER ACCESS", desc: "Join our pro-tier for early drops.", color: "bg-[#00B8AE]" }
+            ].map((pillar, i) => (
+              <div key={i} className="group relative">
+                <div className={`w-16 h-16 rounded-3xl ${pillar.color} mb-12 rotate-12 group-hover:rotate-0 transition-transform duration-500 shadow-xl`}></div>
+                <h3 className="text-3xl font-black text-gray-950 mb-6 uppercase tracking-tighter">{pillar.title}</h3>
+                <p className="text-xl text-gray-500 font-medium italic">{pillar.desc}</p>
+                <div className="h-1.5 w-0 bg-gray-900 group-hover:w-full transition-all duration-1000 mt-10 rounded-full"></div>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">ELITE LOGISTICS</h3>
-              <p className="text-gray-500 font-medium leading-relaxed">
-                Fast and reliable delivery available. Track your gear with precision.
-              </p>
-            </div>
-            <div className="text-left">
-              <div className="w-8 h-8 rounded-full border-4 border-blue-500 mb-6 relative">
-                <div className="absolute inset-2 bg-blue-500 rounded-full"></div>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">PRO PROTECTION</h3>
-              <p className="text-gray-500 font-medium leading-relaxed">
-                12-month performance warranty on all professional gear categories.
-              </p>
-            </div>
-            <div className="text-left">
-               <div className="w-8 h-8 rounded-full border-4 border-purple-500 mb-6 relative">
-                <div className="absolute inset-2 bg-purple-500 rounded-full"></div>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter">ELITE LOYALTY</h3>
-              <p className="text-gray-500 font-medium leading-relaxed">
-                Join our community program for early access to limited edition drops.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Epic Footer CTA */}
-      <section className="relative py-24 px-6 text-center bg-gray-950 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 via-cyan-500 to-purple-500"></div>
-        <div className="relative z-10">
-          <h2 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter uppercase italic outline-text">
-            Play Your Game.
+      {/* Footer CTA */}
+      <section className="relative py-48 px-6 text-center bg-gray-950 overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[500px] bg-[#00B8AE]/10 blur-[180px] rounded-full pointer-events-none"></div>
+        <div className="relative z-10 space-y-16 reveal active">
+          <h2 className="text-[100px] md:text-[160px] font-black text-white tracking-tighter uppercase italic leading-[0.7] mb-5">
+            LEAVE <br />
+            <span className="text-gradient text-glow">A LEGACY</span>
           </h2>
-          <p className="text-2xl text-teal-400 font-black mb-12 tracking-[0.2em] uppercase">
-            GEAR UP WITH KHEL BAZAAR
-          </p>
           <button
             onClick={() => router.push('/products')}
-            className="inline-flex items-center gap-4 px-12 py-6 bg-teal-500 text-white rounded-[32px] font-black text-2xl hover:bg-white hover:text-teal-600 transition-all duration-500 shadow-[0_20px_80px_rgba(20,184,166,0.4)]"
+            className="group inline-flex items-center gap-10 px-20 py-8 bg-white text-black rounded-full font-black text-2xl uppercase tracking-[0.3em] transition-all duration-700 hover:bg-[#00B8AE] hover:text-white transform hover:-translate-y-4 shadow-2xl"
           >
-            GET THE GEAR NOW
+            STEP INTO THE ARENA
           </button>
         </div>
       </section>
+
+      <style jsx>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
   );
 }

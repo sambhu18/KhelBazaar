@@ -79,16 +79,39 @@ export default function CommunityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">👥 Khel Bazaar Community</h1>
-          <p className="text-teal-100 text-lg">Connect with athletes, share experiences, and grow together</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 pt-[120px]">
+      {/* Premium Hero Section for Community */}
+      <section className="relative h-[40vh] min-h-[400px] flex items-center overflow-hidden bg-black mx-6 rounded-[40px] shadow-2xl mb-12">
+        {/* Background Image - Community Themed */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 scale-105 transition-transform duration-[10000ms] ease-linear hover:scale-110"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541252260730-0412e8e2108e?q=80&w=2072&auto=format&fit=crop')" }}
+        ></div>
+        
+        {/* Cinematic Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black/20 z-10"></div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="relative max-w-7xl mx-auto px-12 z-20 w-full reveal active">
+          <div className="max-w-3xl space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 backdrop-blur-xl mb-4">
+              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+              <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.2em]">Athlete Network</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-black text-white leading-[0.9] tracking-tight uppercase">
+              COMMUNITY <br />
+              <span className="text-gradient text-glow">HUB</span>
+            </h1>
+            
+            <p className="text-gray-400 text-lg font-medium max-w-xl">
+              Connect with fellow athletes, share your victories, and grow with the elite sports community of Nepal.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Feed */}
           <div className="lg:col-span-2 space-y-6">
@@ -170,18 +193,17 @@ export default function CommunityPage() {
                     <div className="flex items-center gap-6 py-4 border-y border-gray-100 text-gray-600">
                       <button 
                         onClick={() => handleLike(post._id)}
-                        className="flex items-center gap-2 hover:text-red-600 transition"
+                        className="flex items-center gap-2 hover:text-red-500 transition text-sm font-bold"
                       >
-                        <span>👍</span>
-                        <span className="font-semibold">{post.likes}</span>
+                        Like
+                        <span className="font-bold">{post.likes}</span>
                       </button>
-                      <div className="flex items-center gap-2">
-                        <span>💬</span>
-                        <span className="font-semibold">{post.comments?.length || 0}</span>
+                      <div className="flex items-center gap-2 text-sm font-bold">
+                        Comment
+                        <span className="font-bold">{post.comments?.length || 0}</span>
                       </div>
-                      <button className="flex items-center gap-2 hover:text-green-600 transition ml-auto">
-                        <span>📤</span>
-                        <span className="font-semibold">Share</span>
+                      <button className="flex items-center gap-2 hover:text-[#00B8AE] transition ml-auto text-sm font-bold uppercase tracking-widest">
+                        Share
                       </button>
                     </div>
 
@@ -224,11 +246,11 @@ export default function CommunityPage() {
           <div className="lg:col-span-1 space-y-6">
             {/* Featured Athletes */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">⭐ Featured Athletes</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 uppercase tracking-wider">Featured Athletes</h3>
               <div className="space-y-4">
                 {athletes.map((athlete, i) => (
                   <div key={i} className="flex items-center gap-4 pb-4 border-b border-gray-200 last:border-b-0">
-                    <div className="text-3xl">{athlete.avatar}</div>
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold">A</div>
                     <div className="flex-grow">
                       <h4 className="font-bold text-gray-900">{athlete.name}</h4>
                       <p className="text-sm text-gray-600">{athlete.role}</p>
@@ -244,7 +266,7 @@ export default function CommunityPage() {
 
             {/* Community Stats */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">📊 Community Stats</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 uppercase tracking-wider text-center">Community Stats</h3>
               <div className="space-y-4">
                 <div className="text-center">
                   <p className="text-3xl font-bold text-[#00B8AE]">50.2K</p>

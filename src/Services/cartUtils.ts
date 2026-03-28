@@ -19,9 +19,14 @@ export const addToCart = async (product: any, quantity: number = 1, size: string
                 customization
             });
             triggerCartUpdate();
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Added to cart!", type: "success" } }));
+            }
             return { success: true, message: "Added to cart!" };
         } catch (error: any) {
-            console.error("Add to cart API error:", error);
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: error.response?.data?.msg || "Failed to add to cart", type: "error" } }));
+            }
             return {
                 success: false,
                 message: error.response?.data?.msg || "Failed to add to cart"
@@ -61,9 +66,14 @@ export const addToCart = async (product: any, quantity: number = 1, size: string
 
             localStorage.setItem("cart", JSON.stringify(cart));
             triggerCartUpdate();
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Added to local cart!", type: "success" } }));
+            }
             return { success: true, message: "Added to local cart!" };
         } catch (error) {
-            console.error("Local cart error:", error);
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Failed to add to local cart", type: "error" } }));
+            }
             return { success: false, message: "Failed to add to local cart" };
         }
     }
