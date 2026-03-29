@@ -1,0 +1,77 @@
+﻿node.exe : 
+[baseline-browser-mapping] 
+The data in this module is 
+over two months old.  To 
+ensure accurate Baseline 
+data, please update: `npm 
+i baseline-browser-mapping@
+latest -D`
+At E:\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ([ba  
+  seline-brows...ping@la   
+ test -D`:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+   Γû▓ Next.js 16.0.1 (Turbopack)
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] 
+The data in this module is 
+over two months old.  To 
+ensure accurate Baseline 
+data, please update: `npm 
+i baseline-browser-mapping@
+latest -D`
+ Γ£ô Compiled successfully in 35.7s
+   Running TypeScript ...
+Failed to compile.
+
+.next/dev/types/validator.t
+s:195:39
+Type error: File 'E:/FinalY
+earProject/frontend/src/app
+/clubs/{clubId]/page.tsx' 
+is not a module.
+
+[0m [90m 193 |[39m {
+ [90m 194 |[39m   type __
+IsExpected[33m<[39m[33mS
+pecific[39m 
+[36mextends[39m [33mAppP
+ageConfig[39m[33m<[39m[
+32m"/clubs/{clubId]"[39m[
+33m>>[39m [33m=[39m 
+[33mSpecific[39m
+[31m[1m>[22m[39m[90m 
+195 |[39m   
+[36mconst[39m handler 
+[33m=[39m {} 
+[36mas[39m 
+[36mtypeof[39m [36mimpor
+t[39m([32m"../../../src/a
+pp/clubs/{clubId]/page.js"
+[39m)
+ [90m     |[39m          
+                           
+  [31m[1m^[22m[39m
+ [90m 196 |[39m   type 
+__Check [33m=[39m __IsExp
+ected[33m<[39m[36mtypeof
+[39m handler[33m>[39m
+ [90m 197 |[39m   
+[90m// @ts-ignore[39m
+ [90m 198 |[39m   type 
+__Unused [33m=[39m 
+__Check[0m
+Next.js build worker 
+exited with code: 1 and 
+signal: null

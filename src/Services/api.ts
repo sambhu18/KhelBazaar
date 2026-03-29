@@ -402,7 +402,9 @@ export const getClubPost = async (id: string) => {
 };
 
 export const createClubPost = async (data: FormData) => {
-  const response = await axiosInstance.post("/api/club-posts", data);
+  const response = await axiosInstance.post("/api/club-posts", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response;
 };
 

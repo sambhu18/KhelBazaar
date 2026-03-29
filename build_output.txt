@@ -1,0 +1,90 @@
+﻿node.exe : [baseline-br
+owser-mapping] The 
+data in this module is 
+over two months old.  
+To ensure accurate 
+Baseline data, please 
+update: `npm i baseline
+-browser-mapping@latest
+ -D`
+At 
+E:\nodejs\npx.ps1:29 
+char:3
++   & $NODE_EXE 
+$NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : 
+NotSpecified: ([ba    
+seline-brows...ping@la 
+   test -D`:String) 
+[], R    emoteException
+    + 
+FullyQualifiedErrorI   
+ d : NativeCommandError
+ 
+   Γû▓ Next.js 16.0.1 (Turbopack)
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+[baseline-browser-mappi
+ng] The data in this 
+module is over two 
+months old.  To ensure 
+accurate Baseline 
+data, please update: 
+`npm i baseline-browser
+-mapping@latest -D`
+
+> Build error occurred
+Error: Turbopack build 
+failed with 2 errors:
+./src/app/dashboard/loy
+alty/page.tsx:221:1
+Parsing ecmascript 
+source code failed
+[0m [90m 219 |[39m  
+   [33m<[39m[33m/[3
+9m[33mdiv[39m[33m>[
+39m
+ [90m 220 |[39m   
+)[33m;[39m
+[31m[1m>[22m[39m[9
+0m 221 |[39m }
+ [90m     |[39m 
+[31m[1m^[22m[39m
+ [90m 222 |[39m[0m
+
+Unexpected token. Did 
+you mean `{'}'}` or 
+`&rbrace;`?
+
+
+./src/app/dashboard/ord
+ers/page.tsx:189:1
+Parsing ecmascript 
+source code failed
+[0m [90m 187 |[39m  
+   [33m<[39m[33m/[3
+9m[33mdiv[39m[33m>[
+39m
+ [90m 188 |[39m   
+)[33m;[39m
+[31m[1m>[22m[39m[9
+0m 189 |[39m }
+ [90m     |[39m 
+[31m[1m^[22m[39m
+ [90m 190 |[39m[0m
+
+Unexpected token. Did 
+you mean `{'}'}` or 
+`&rbrace;`?
+
+
+    at <unknown> (./src
+/app/dashboard/loyalty/
+page.tsx:221:1)
+    at <unknown> (./src
+/app/dashboard/orders/p
+age.tsx:189:1)
