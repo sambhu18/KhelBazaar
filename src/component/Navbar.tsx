@@ -59,7 +59,11 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
     setIsLoggedIn(false);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Logged out successfully!", type: "success" } }));
+    }
     router.push("/");
   };
 

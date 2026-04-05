@@ -9,6 +9,18 @@ export const triggerCartUpdate = () => {
 export const addToCart = async (product: any, quantity: number = 1, size: string = "", customization: { name: string, number: string } | null = null) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
+    if (!token) {
+        // No token - require login
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Please login to add items to cart", type: "error" } }));
+        }
+        return {
+            success: false,
+            message: "Please login to add items to cart",
+            requiresLogin: true
+        };
+    }
+
     if (token) {
         // Authenticated: Use API
         try {
@@ -25,11 +37,11 @@ export const addToCart = async (product: any, quantity: number = 1, size: string
             return { success: true, message: "Added to cart!" };
         } catch (error: any) {
             if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: error.response?.data?.msg || "Failed to add to cart", type: "error" } }));
+                window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: error.response?.data?.msg || "Login first to add to cart", type: "error" } }));
             }
             return {
                 success: false,
-                message: error.response?.data?.msg || "Failed to add to cart"
+                message: error.response?.data?.msg || "Login first to add to cart"
             };
         }
     } else {

@@ -111,6 +111,13 @@ export default function ProductDetailPage() {
     endDate: ''
   });
   const [rentalAvailability, setRentalAvailability] = useState<any>(null);
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    zipCode: ''
+  });
 
   const getImageUrl = (imagePath: string | undefined) => {
     if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
@@ -159,14 +166,21 @@ export default function ProductDetailPage() {
         return;
       }
 
-      await addToCart(
+      const result = await addToCart(
         product,
         quantity,
         selectedSize,
         (product.customizable && (customization.name || customization.number)) ? customization : null
       );
+
+      // Check if login is required
+      if (result.requiresLogin) {
+        // Redirect to login
+        router.push("/auth/Login");
+        return;
+      }
     } catch (err: any) {
-      alert(err.response?.data?.msg || 'Failed to add to cart');
+      window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: err.response?.data?.msg || 'Login first to add to cart', type: "error" } }));
     } finally {
       setActionLoading(null);
     }
@@ -204,16 +218,24 @@ export default function ProductDetailPage() {
   const handleRentProduct = async () => {
     if (!product || !rentalAvailability?.available) return;
 
+    if (!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address || !deliveryAddress.city) {
+      alert('Please fill in all delivery address fields');
+      return;
+    }
+
     try {
       setActionLoading('rent');
       await createRental({
         productId: product._id,
         startDate: rentalDates.startDate,
         endDate: rentalDates.endDate,
-        deliveryAddress: {} // This would come from user's default address
+        deliveryAddress
       });
-      alert('Rental booking created successfully!');
+      alert('Rental booking created successfully! Our team will contact you to confirm.');
       setShowRentalModal(false);
+      setRentalAvailability(null);
+      setRentalDates({ startDate: '', endDate: '' });
+      setDeliveryAddress({ name: '', phone: '', address: '', city: '', zipCode: '' });
     } catch (err: any) {
       alert(err.response?.data?.msg || 'Failed to create rental booking');
     } finally {
@@ -878,76 +900,132 @@ export default function ProductDetailPage() {
 
       {/* Rental Modal */}
       {showRentalModal && product.isRentable && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Rent {product.title}</h3>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#00B8AE] to-teal-500 text-white p-6 rounded-t-2xl">
+              <h3 className="text-xl font-black">📅 Rent {product.title}</h3>
+              <p className="text-teal-100 text-sm mt-1">Fill in the details to book your rental</p>
+            </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  value={rentalDates.startDate}
-                  onChange={(e) => setRentalDates({ ...rentalDates, startDate: e.target.value })}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  value={rentalDates.endDate}
-                  onChange={(e) => setRentalDates({ ...rentalDates, endDate: e.target.value })}
-                  min={rentalDates.startDate || new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                />
+            <div className="p-6 space-y-5">
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Start Date</label>
+                  <input
+                    type="date"
+                    value={rentalDates.startDate}
+                    onChange={(e) => { setRentalDates({ ...rentalDates, startDate: e.target.value }); setRentalAvailability(null); }}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-medium focus:border-[#00B8AE] focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">End Date</label>
+                  <input
+                    type="date"
+                    value={rentalDates.endDate}
+                    onChange={(e) => { setRentalDates({ ...rentalDates, endDate: e.target.value }); setRentalAvailability(null); }}
+                    min={rentalDates.startDate || new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-medium focus:border-[#00B8AE] focus:outline-none transition-colors"
+                  />
+                </div>
               </div>
 
               {rentalDates.startDate && rentalDates.endDate && (
                 <button
                   onClick={checkRentalDates}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="w-full py-2.5 bg-[#00B8AE] text-white rounded-xl font-bold text-sm hover:bg-teal-600 transition-colors"
                 >
                   Check Availability
                 </button>
               )}
 
               {rentalAvailability && (
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className={`p-4 rounded-xl border-2 ${rentalAvailability.available ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                   {rentalAvailability.available ? (
-                    <div className="text-green-600">
-                      <p className="font-medium">✓ Available for rental</p>
-                      <div className="mt-2 text-sm">
-                        <p>Duration: {rentalAvailability.pricing.totalDays} days</p>
-                        <p>Daily Rate: {product.currency} {rentalAvailability.pricing.dailyRate}</p>
-                        <p>Total: {product.currency} {rentalAvailability.pricing.totalAmount}</p>
-                        <p>Deposit: {product.currency} {rentalAvailability.pricing.deposit}</p>
+                    <>
+                      <p className="font-bold text-green-700 mb-3">✓ Available for rental!</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-gray-400 text-xs">Duration</p>
+                          <p className="font-black text-gray-900">{rentalAvailability.pricing.totalDays} days</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-gray-400 text-xs">Daily Rate</p>
+                          <p className="font-black text-gray-900">{product.currency} {rentalAvailability.pricing.dailyRate}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-gray-400 text-xs">Total</p>
+                          <p className="font-black text-[#00B8AE]">{product.currency} {rentalAvailability.pricing.totalAmount}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-2 text-center">
+                          <p className="text-gray-400 text-xs">Deposit</p>
+                          <p className="font-black text-gray-900">{product.currency} {rentalAvailability.pricing.deposit}</p>
+                        </div>
                       </div>
-                    </div>
+                    </>
                   ) : (
-                    <div className="text-red-600">
-                      <p className="font-medium">✗ Not available for selected dates</p>
-                      <p className="text-sm">Please choose different dates</p>
-                    </div>
+                    <>
+                      <p className="font-bold text-red-700">✗ Not available for selected dates</p>
+                      <p className="text-sm text-red-600 mt-1">Please choose different dates</p>
+                    </>
                   )}
+                </div>
+              )}
+
+              {/* Delivery Address — only shown when available */}
+              {rentalAvailability?.available && (
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                  <p className="text-xs font-black text-gray-500 uppercase tracking-widest">Delivery Address</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="text" placeholder="Full Name *"
+                      value={deliveryAddress.name}
+                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, name: e.target.value })}
+                      className="col-span-2 w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-[#00B8AE] focus:outline-none"
+                    />
+                    <input
+                      type="tel" placeholder="Phone *"
+                      value={deliveryAddress.phone}
+                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, phone: e.target.value })}
+                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-[#00B8AE] focus:outline-none"
+                    />
+                    <input
+                      type="text" placeholder="City *"
+                      value={deliveryAddress.city}
+                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, city: e.target.value })}
+                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-[#00B8AE] focus:outline-none"
+                    />
+                    <input
+                      type="text" placeholder="Street Address *"
+                      value={deliveryAddress.address}
+                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, address: e.target.value })}
+                      className="col-span-2 w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-[#00B8AE] focus:outline-none"
+                    />
+                    <input
+                      type="text" placeholder="ZIP Code"
+                      value={deliveryAddress.zipCode}
+                      onChange={(e) => setDeliveryAddress({ ...deliveryAddress, zipCode: e.target.value })}
+                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:border-[#00B8AE] focus:outline-none"
+                    />
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="flex space-x-3 mt-6">
+            {/* Footer Buttons */}
+            <div className="flex gap-3 px-6 pb-6">
               {rentalAvailability?.available && (
                 <button
                   onClick={handleRentProduct}
                   disabled={actionLoading === 'rent'}
-                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
+                  className="flex-1 py-3 bg-black text-white rounded-xl font-black hover:bg-gray-900 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {actionLoading === 'rent' ? 'Booking...' : 'Book Rental'}
+                  {actionLoading === 'rent' ? (
+                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Booking...</>
+                  ) : 'CONFIRM RENTAL'}
                 </button>
               )}
               <button
@@ -955,8 +1033,9 @@ export default function ProductDetailPage() {
                   setShowRentalModal(false);
                   setRentalAvailability(null);
                   setRentalDates({ startDate: '', endDate: '' });
+                  setDeliveryAddress({ name: '', phone: '', address: '', city: '', zipCode: '' });
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-6 py-3 border-2 border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>

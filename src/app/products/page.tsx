@@ -137,7 +137,10 @@ function ProductsContent() {
                           e.preventDefault(); e.stopPropagation();
                           if (p.sizes?.length > 0) { router.push(`/products/${p._id}`); return; }
                           const { addToCart } = await import("@/src/Services/cartUtils");
-                          await addToCart(p);
+                          const result = await addToCart(p);
+                          if (result.requiresLogin) {
+                            router.push("/auth/Login");
+                          }
                         }}
                         className="w-12 h-12 rounded-full bg-gray-950 text-white flex items-center justify-center font-bold text-lg hover:bg-[#00B8AE] transition-all active:scale-90"
                       >+</button>

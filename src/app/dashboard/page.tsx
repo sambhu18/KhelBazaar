@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import axiosInstance from '@/src/Services/axiosinstance';
 import Image from 'next/image';
 
@@ -17,6 +18,7 @@ interface Product {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -207,7 +209,11 @@ export default function Dashboard() {
 
                       const { addToCart } = await import("@/src/Services/cartUtils");
                       const result = await addToCart(product);
-                      if (result.success) alert(result.message);
+                      if (result.requiresLogin) {
+                        router.push("/auth/Login");
+                      } else if (result.success) {
+                        alert(result.message);
+                      }
                     }}
                     className={`w-full py-2 px-4 rounded-lg font-bold transition ${product.stock > 0
                       ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white hover:shadow-lg'

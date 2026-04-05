@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
 export default function AdminLayout({
@@ -10,37 +10,57 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AdminLayout mounted - checking auth");
+    // Skip auth check for login page
+    if (pathname === "/admin/login") {
+      setLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("userRole");
 
     if (!token || role !== "admin") {
-      router.replace("/admin/login"); // ✅ replace avoids back loop
+      router.replace("/admin/login");
       return;
     }
     
-    setLoading(false); // ✅ IMPORTANT
-    setLoading(false); // ✅ IMPORTANT
-  }, []);
+    setIsAuthenticated(true);
+    setLoading(false);
+  }, [router, pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: "Logged out successfully!", type: "success" } }));
+    }
     router.replace("/admin/login");
   };
 
-  // ✅ Loading state
-  {
-    loading && (
+  // Show loading state while checking auth (but not for login page)
+  if (loading) {
+    return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-xl font-semibold text-gray-700">
           Loading admin panel...
         </div>
       </div>
     );
+  }
+
+  // If on login page, render it without the sidebar
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
+  // Only show to authenticated admins
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (
@@ -71,8 +91,10 @@ export default function AdminLayout({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6">
-        {children}
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 overflow-auto p-6">
+          {children}
+        </div>
       </div>
     </div>
   );

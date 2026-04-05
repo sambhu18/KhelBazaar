@@ -16,6 +16,19 @@ export default function HomePage() {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
   const featuredRef = useRef<HTMLDivElement>(null);
+  
+  // Donation state
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [donationAmount, setDonationAmount] = useState<number | null>(null);
+  const [donationCustomAmount, setDonationCustomAmount] = useState("");
+  const [donorInfo, setDonorInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    isAnonymous: false,
+  });
+  const [donationLoading, setDonationLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -56,7 +69,89 @@ export default function HomePage() {
   };
 
   const handleDonate = (amount: number | string) => {
-    alert(`Thank you for your generous donation of ${typeof amount === 'number' ? 'RS ' + amount : amount}! Together, we're changing grassroots sports. ❤️`);
+    if (amount === "your gift") {
+      setDonationAmount(null);
+      setDonationCustomAmount("");
+    } else {
+      setDonationAmount(amount as number);
+      setDonationCustomAmount("");
+    }
+    setShowDonationModal(true);
+  };
+
+  const handleDonationSubmit = async () => {
+    if (!donationAmount && !donationCustomAmount) {
+      alert("Please select or enter an amount");
+      return;
+    }
+
+    const finalAmount = donationAmount || parseInt(donationCustomAmount);
+    if (finalAmount < 10) {
+      alert("Minimum donation amount is NPR 10");
+      return;
+    }
+
+    if (!donorInfo.isAnonymous && (!donorInfo.name || !donorInfo.email)) {
+      alert("Please enter your name and email");
+      return;
+    }
+
+    try {
+      setDonationLoading(true);
+
+      // Create donation
+      const donationRes = await axiosInstance.post("/api/donations", {
+        amount: finalAmount,
+        paymentMethod: "esewa",
+        donorName: donorInfo.isAnonymous ? "Anonymous Donor" : donorInfo.name,
+        donorEmail: donorInfo.isAnonymous ? null : donorInfo.email,
+        donorPhone: donorInfo.phone,
+        donorMessage: donorInfo.message,
+        campaign: "grassroots",
+        isAnonymous: donorInfo.isAnonymous,
+      });
+
+      const donationId = donationRes.data?.donation?._id;
+      console.log("✅ Donation created:", donationId);
+
+      // Initiate eSewa payment
+      const esewaRes = await axiosInstance.post(
+        `/api/donations/${donationId}/esewa/initiate`
+      );
+
+      const { paymentUrl, params } = esewaRes.data;
+      console.log("📋 eSewa Form Params:", {
+        url: paymentUrl,
+        amount: params.amount,
+        transaction_uuid: params.transaction_uuid,
+        product_code: params.product_code,
+      });
+
+      // Create and submit form to eSewa
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = paymentUrl;
+
+      Object.entries(params).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      console.log("🔄 Submitting form to eSewa...");
+      form.submit();
+    } catch (err: any) {
+      console.error("❌ Donation error:", err);
+      alert(
+        err.response?.data?.msg ||
+          "Error processing donation. Please try again.\n\nNote: If eSewa shows 'Service unavailable', it may be a temporary issue with eSewa's test server. Please try again in a few moments."
+      );
+    } finally {
+      setDonationLoading(false);
+    }
   };
 
   const categories = [
@@ -68,11 +163,11 @@ export default function HomePage() {
 
   // Live activity ticker data
   const activities = [
-    "Rohan purchased Nike Football ⚡",
+    "Sambhu purchased Nike Football ⚡",
     "Sita joined Elite Runners Club 🏃",
-    "Hari rented a Cricket Kit 🏏",
+    "Sambhu rented a Cricket Kit 🏏",
     "Mina left a 5-star review ⭐",
-    "Bikash donated NPR 1000 ❤️",
+    "Sambhu donated NPR 1000 ❤️",
     "Priya customized her team jersey 👕",
     "Suresh booked a basketball court 🏀",
     "Anita shared a community post 📸",
@@ -422,6 +517,141 @@ export default function HomePage() {
                       ))}
                    </div>
                    <button onClick={() => handleDonate("your gift")} className="w-full py-5 bg-[#00B8AE] text-white font-black rounded-xl shadow-xl hover:shadow-teal-500/40 hover:bg-teal-400 transition-all text-sm tracking-wider">GIVE THE GIFT OF SPORT</button>
+
+                   {/* Donation Modal */}
+                   {showDonationModal && (
+                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 max-h-[90vh] overflow-y-auto">
+                         <div className="flex items-center justify-between mb-6">
+                           <h2 className="text-2xl font-black text-gray-900">Support Grassroots</h2>
+                           <button
+                             onClick={() => setShowDonationModal(false)}
+                             className="text-2xl text-gray-500 hover:text-gray-900 transition-colors"
+                           >
+                             ✕
+                           </button>
+                         </div>
+
+                         <div className="space-y-5">
+                           {/* Amount Selection */}
+                           {!donationAmount && (
+                             <div>
+                               <label className="block text-sm font-black text-gray-700 mb-3">Choose Amount</label>
+                               <div className="grid grid-cols-2 gap-3 mb-4">
+                                 {[100, 500, 1000, 2500].map(amt => (
+                                   <button
+                                     key={amt}
+                                     onClick={() => setDonationAmount(amt)}
+                                     className="py-3 rounded-lg border-2 border-gray-200 bg-white text-gray-900 font-black hover:border-[#00B8AE] hover:text-[#00B8AE] transition-all"
+                                   >
+                                     RS {amt}
+                                   </button>
+                                 ))}
+                               </div>
+                             </div>
+                           )}
+
+                           {/* Custom Amount */}
+                           <div>
+                             <label className="block text-sm font-black text-gray-700 mb-2">Or Enter Custom Amount (NPR)</label>
+                             <input
+                               type="number"
+                               value={donationCustomAmount}
+                               onChange={(e) => {
+                                 setDonationCustomAmount(e.target.value);
+                                 setDonationAmount(null);
+                               }}
+                               placeholder="Enter amount"
+                               className="w-full px-4 py-3 border-2 border-gray-200  rounded-lg focus:outline-none focus:border-[#00B8AE] font-bold"
+                             />
+                           </div>
+
+                           {/* Donor Info */}
+                           <div className="space-y-3 border-t pt-5">
+                             <label className="flex items-center gap-2">
+                               <input
+                                 type="checkbox"
+                                 checked={donorInfo.isAnonymous}
+                                 onChange={(e) =>
+                                   setDonorInfo({ ...donorInfo, isAnonymous: e.target.checked })
+                                 }
+                                 className="w-4 h-4 cursor-pointer"
+                               />
+                               <span className="text-sm font-bold text-gray-700">Make this donation anonymous</span>
+                             </label>
+
+                             {!donorInfo.isAnonymous && (
+                               <>
+                                 <div>
+                                   <label className="block text-xs font-black text-gray-600 mb-1">Full Name</label>
+                                   <input
+                                     type="text"
+                                     value={donorInfo.name}
+                                     onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
+                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#00B8AE]"
+                                     placeholder="Your name"
+                                   />
+                                 </div>
+
+                                 <div>
+                                   <label className="block text-xs font-black text-gray-600 mb-1">Email</label>
+                                   <input
+                                     type="email"
+                                     value={donorInfo.email}
+                                     onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
+                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#00B8AE]"
+                                     placeholder="your@email.com"
+                                   />
+                                 </div>
+
+                                 <div>
+                                   <label className="block text-xs font-black text-gray-600 mb-1">Phone (Optional)</label>
+                                   <input
+                                     type="tel"
+                                     value={donorInfo.phone}
+                                     onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value })}
+                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#00B8AE]"
+                                     placeholder="977-..."
+                                   />
+                                 </div>
+                               </>
+                             )}
+
+                             <div>
+                               <label className="block text-xs font-black text-gray-600 mb-1">Message (Optional)</label>
+                               <textarea
+                                 value={donorInfo.message}
+                                 onChange={(e) => setDonorInfo({ ...donorInfo, message: e.target.value })}
+                                 placeholder="Share why you're supporting grassroots sports..."
+                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#00B8AE] resize-none h-20"
+                               />
+                             </div>
+                           </div>
+
+                           {/* Summary */}
+                           <div className="bg-teal-50 rounded-lg p-4 border border-[#00B8AE]/20">
+                             <p className="text-xs text-gray-600 mb-1">Donation Amount</p>
+                             <p className="text-3xl font-black text-[#00B8AE]">
+                               RS {(donationAmount || parseInt(donationCustomAmount) || 0).toLocaleString()}
+                             </p>
+                           </div>
+
+                           {/* Submit Button */}
+                           <button
+                             onClick={handleDonationSubmit}
+                             disabled={donationLoading}
+                             className="w-full py-4 bg-[#00B8AE] text-white font-black rounded-xl hover:bg-teal-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                           >
+                             {donationLoading ? "Processing..." : "DONATE WITH eSEWA"}
+                           </button>
+
+                           <p className="text-xs text-gray-500 text-center">
+                             You will be redirected to eSewa for secure payment
+                           </p>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                 </div>
              </div>
           </div>
@@ -466,7 +696,7 @@ export default function HomePage() {
             </h2>
             <p className="text-xl text-gray-400 mb-10 leading-relaxed font-bold max-w-2xl">Elite jersey customization with professional thermal-press technology.</p>
             <button
-              onClick={() => router.push('/products?category=jersey')}
+              onClick={() => router.push('/jersey-customization')}
               className="px-14 py-6 bg-white text-black rounded-[20px] font-black text-lg hover:bg-[#00B8AE] hover:text-white transition-all duration-500 shadow-xl"
             >
               START CUSTOMIZING NOW
