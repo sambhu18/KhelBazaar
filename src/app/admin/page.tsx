@@ -19,15 +19,15 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       const [productsRes, ordersRes, usersRes] = await Promise.all([
-        axiosInstance.get("/api/products").catch(() => ({ data: [] })),
+        axiosInstance.get("/api/products?limit=1000").catch(() => ({ data: { products: [] } })),
         axiosInstance.get("/api/orders").catch(() => ({ data: [] })),
-        axiosInstance.get("/api/users").catch(() => ({ data: [] })),
+        axiosInstance.get("/api/users?limit=1000").catch(() => ({ data: { users: [] } })),
       ]);
 
       setStats({
-        products: productsRes.data.length || 0,
-        orders: ordersRes.data.length || 0,
-        users: usersRes.data.length || 0,
+        products: productsRes.data.products?.length || 0,
+        orders: Array.isArray(ordersRes.data) ? ordersRes.data.length : 0,
+        users: usersRes.data.users?.length || 0,
       });
     } catch (error) {
       console.error("Failed to fetch stats", error);
