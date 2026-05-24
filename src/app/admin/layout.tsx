@@ -76,6 +76,7 @@ export default function AdminLayout({
           <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">📊 Dashboard</Link>
           <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">📦 Products</Link>
           <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">🛒 Orders</Link>
+          <Link href="/admin/rentals" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">🔄 Rentals</Link>
           <Link href="/admin/users" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">👥 Users</Link>
           <Link href="/admin/clubs" className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all font-medium">🏆 Clubs</Link>
         </nav>

@@ -219,7 +219,9 @@ export default function ProductDetailPage() {
     if (!product || !rentalAvailability?.available) return;
 
     if (!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.address || !deliveryAddress.city) {
-      alert('Please fill in all delivery address fields');
+      window.dispatchEvent(new CustomEvent("show-toast", {
+        detail: { message: "Please fill in all delivery address fields", type: "error" }
+      }));
       return;
     }
 
@@ -231,13 +233,26 @@ export default function ProductDetailPage() {
         endDate: rentalDates.endDate,
         deliveryAddress
       });
-      alert('Rental booking created successfully! Our team will contact you to confirm.');
+      
+      window.dispatchEvent(new CustomEvent("show-toast", {
+        detail: { message: "Rental booking created successfully! Our team will contact you to confirm. Redirecting to your rentals...", type: "success" }
+      }));
+      
+      // Refresh page after 2 seconds to show in rentals
+      setTimeout(() => {
+        window.location.href = '/dashboard/rentals';
+      }, 2000);
+      
       setShowRentalModal(false);
       setRentalAvailability(null);
       setRentalDates({ startDate: '', endDate: '' });
       setDeliveryAddress({ name: '', phone: '', address: '', city: '', zipCode: '' });
     } catch (err: any) {
-      alert(err.response?.data?.msg || 'Failed to create rental booking');
+      const errorMsg = err.response?.data?.msg || 'Failed to create rental booking';
+      window.dispatchEvent(new CustomEvent("show-toast", {
+        detail: { message: errorMsg, type: "error" }
+      }));
+      console.error("Rental creation error:", err);
     } finally {
       setActionLoading(null);
     }

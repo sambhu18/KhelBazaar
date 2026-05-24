@@ -11,6 +11,8 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [estimatedDelivery, setEstimatedDelivery] = useState("");
 
   useEffect(() => {
     fetchOrders();
@@ -34,17 +36,35 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+  const handleStatusUpdate = async (orderId: string, newStatus: string, order?: any) => {
     try {
       setErrorMsg("");
       setSuccessMsg("");
       
-      await axiosInstance.put(`/api/orders/${orderId}/status`, { status: newStatus });
+      const updateData: any = { status: newStatus };
+      
+      // Add tracking details when shipping
+      if (newStatus === "shipped" && order?.status === "confirmed") {
+        if (!trackingNumber.trim()) {
+          setErrorMsg("Please enter a tracking number");
+          return;
+        }
+        updateData.trackingNumber = trackingNumber;
+        if (estimatedDelivery) updateData.estimatedDelivery = estimatedDelivery;
+      }
+      
+      await axiosInstance.put(`/api/orders/${orderId}/status`, updateData);
       setSuccessMsg("Order status updated successfully!");
+      setTrackingNumber("");
+      setEstimatedDelivery("");
       fetchOrders();
-      setShowDetails(false);
+      
+      // Update selected order if it's open
+      if (selectedOrder?._id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus, trackingNumber: trackingNumber || selectedOrder.trackingNumber });
+      }
     } catch (error: any) {
-      setErrorMsg("Failed to update order status");
+      setErrorMsg(error.response?.data?.msg || "Failed to update order status");
     }
   };
 
@@ -68,25 +88,62 @@ export default function AdminOrdersPage() {
     return colors[status] || "bg-gray-50 text-gray-700";
   };
 
+  const renderStatusActions = (order: any) => {
+    switch(order.status) {
+      case "pending":
+        return (
+          <button
+            onClick={() => handleStatusUpdate(order._id, "confirmed")}
+            className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          >
+            Confirm
+          </button>
+        );
+      case "confirmed":
+        return (
+          <button
+            onClick={() => {
+              setSelectedOrder(order);
+              setShowDetails(true);
+            }}
+            className="text-sm px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+          >
+            Ship Now
+          </button>
+        );
+      case "shipped":
+        return (
+          <button
+            onClick={() => handleStatusUpdate(order._id, "delivered")}
+            className="text-sm px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Deliver
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-600 mt-2">Manage all customer orders</p>
+          <h1 className="text-4xl font-bold text-gray-900">Orders Management</h1>
+          <p className="text-gray-600 mt-2">Manage customer orders and parcel tracking</p>
         </div>
       </div>
 
       {/* Messages */}
       {successMsg && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800 font-medium">{successMsg}</p>
+          <p className="text-green-800 font-medium">✓ {successMsg}</p>
         </div>
       )}
 
       {errorMsg && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 font-medium">{errorMsg}</p>
+          <p className="text-red-800 font-medium">✕ {errorMsg}</p>
         </div>
       )}
 
@@ -122,6 +179,7 @@ export default function AdminOrdersPage() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Customer</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Total</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Tracking</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Payment</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Actions</th>
@@ -140,6 +198,13 @@ export default function AdminOrdersPage() {
                         {order.status}
                       </span>
                     </td>
+                    <td className="px-6 py-4 text-sm">
+                      {order.trackingNumber ? (
+                        <code className="bg-gray-100 px-2 py-1 rounded text-blue-600 font-mono">{order.trackingNumber}</code>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getPaymentStatusColor(order.paymentStatus)}`}>
                         {order.paymentStatus}
@@ -149,15 +214,18 @@ export default function AdminOrdersPage() {
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          setShowDetails(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                      >
-                        View Details
-                      </button>
+                      <div className="flex gap-2">
+                        {renderStatusActions(order)}
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setShowDetails(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          View
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -229,6 +297,60 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
+              {/* Status Update Section */}
+              {selectedOrder.status === "confirmed" && (
+                <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-3">📦 Ship This Order</h3>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Enter tracking number (e.g., TRK123456)"
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <input
+                      type="date"
+                      placeholder="Estimated delivery date"
+                      value={estimatedDelivery}
+                      onChange={(e) => setEstimatedDelivery(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <button
+                      onClick={() => handleStatusUpdate(selectedOrder._id, "shipped", selectedOrder)}
+                      className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                    >
+                      Ship Order
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Current Tracking Info */}
+              {selectedOrder.trackingNumber && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-semibold text-gray-900 mb-3">📍 Tracking Information</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Tracking Number:</span>
+                      <code className="font-mono font-semibold text-blue-600">{selectedOrder.trackingNumber}</code>
+                    </div>
+                    {selectedOrder.estimatedDelivery && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Est. Delivery:</span>
+                        <span className="font-semibold">{new Date(selectedOrder.estimatedDelivery).toLocaleDateString()}</span>
+                      </div>
+                    )}
+                    {selectedOrder.shippedAt && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Shipped At:</span>
+                        <span className="font-semibold">{new Date(selectedOrder.shippedAt).toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Status & Payment */}
               <div className="mb-6 grid grid-cols-2 gap-4">
                 <div>
@@ -282,3 +404,4 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
+
