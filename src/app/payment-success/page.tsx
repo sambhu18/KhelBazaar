@@ -34,6 +34,18 @@ function PaymentSuccessContent() {
 
         setOrderData(res.data.order);
         setStatus("success");
+
+        // ✅ Clear cart AFTER successful payment verification
+        console.log("✅ Payment verified! Clearing cart...");
+        if (token) {
+          try {
+            await API.delete("/api/users/cart/clear");
+          } catch (err) {
+            console.error("Failed to clear online cart after payment", err);
+          }
+        }
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event('cartUpdated'));
       } catch (err: any) {
         setStatus("error");
         setErrorMessage(

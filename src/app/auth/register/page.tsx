@@ -67,8 +67,8 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await register(form);
-      setSuccess("Account created successfully! Redirecting to login...");
-      setTimeout(() => router.push("/auth/Login"), 1500);
+      setSuccess("✅ Account created! Check your email for verification link. Redirecting to login...");
+      setTimeout(() => router.push("/auth/Login"), 2000);
     } catch (e: any) {
       setErr(e?.response?.data?.msg || "Registration failed. Please try again.");
       setLoading(false);
@@ -81,9 +81,9 @@ export default function RegisterPage() {
       setSuccess("");
       setLoading(true);
       const res = await googleSignIn({ idToken: credentialResponse.credential });
-      setSuccess("Google signup successful! Redirecting...");
+      setSuccess("Google signup successful! Redirecting home...");
       localStorage.setItem("token", res.data.token);
-      setTimeout(() => router.push("/dashboard"), 1000);
+      setTimeout(() => router.push("/"), 1000);
     } catch (e: any) {
       setErr(e?.response?.data?.msg || "Google login failed");
       setLoading(false);

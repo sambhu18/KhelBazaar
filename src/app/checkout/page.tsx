@@ -71,41 +71,82 @@ export default function CheckoutPage() {
       });
 
       const orderId = orderRes.data?.order?._id;
-      if (token) {
-        try {
-          await API.delete("/api/users/cart/clear");
-        } catch (err) {
-          console.error("Failed to clear online cart", err);
-        }
-      }
-      localStorage.removeItem("cart");
-      window.dispatchEvent(new Event('cartUpdated'));
 
       if (formData.paymentMethod === "esewa") {
-        const esewaRes = await API.post("/api/esewa/initiate", { orderId });
-        const { paymentUrl, params } = esewaRes.data;
+        // For eSewa: Don't clear cart yet - let payment success page do it
+        console.log("🔄 Initiating eSewa payment for order:", orderId);
+        
+        try {
+          const esewaRes = await API.post("/api/esewa/initiate", { orderId });
+          const { paymentUrl, params } = esewaRes.data;
 
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = paymentUrl;
+          console.log("=== eSewa Payment Debug ===");
+          console.log("Payment URL:", paymentUrl);
+          console.log("Form Params:", params);
+          console.log("=============================");
 
-        Object.entries(params).forEach(([key, value]) => {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = value as string;
-          form.appendChild(input);
-        });
+          if (!paymentUrl || !params) {
+            throw new Error("Invalid eSewa response - missing paymentUrl or params");
+          }
 
-        document.body.appendChild(form);
-        form.submit();
+          // Create form for POST submission (proper eSewa integration)
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = paymentUrl;
+
+          Object.entries(params).forEach(([key, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = value as string;
+            form.appendChild(input);
+            console.log(`✓ Added field: ${key}`);
+          });
+
+          document.body.appendChild(form);
+          console.log("✅ Submitting form to eSewa...");
+          form.submit();
+          
+          // Don't clear cart here - it will be cleared after payment success
+        } catch (esewaErr: any) {
+          console.error("❌ eSewa Initiation Error:", esewaErr);
+          
+          // Remove the order we just created if payment fails
+          try {
+            await API.delete(`/api/orders/${orderId}`);
+          } catch (delErr) {
+            console.error("Failed to delete failed order:", delErr);
+          }
+          
+          setLoading(false);
+          
+          const msg = esewaErr?.response?.data?.msg || esewaErr.message || "Failed to initiate eSewa payment";
+          alert(`Payment Error: ${msg}\n\nTroubleshooting:\n1. Check if backend server is running\n2. Try Cash On Delivery instead\n3. Check console for more details`);
+          
+          // Keep cart intact so user can retry
+          return;
+        }
       } else {
+        // For Cash On Delivery: Clear cart immediately (order is confirmed)
+        console.log("✅ Order placed with Cash On Delivery");
+        
+        if (token) {
+          try {
+            await API.delete("/api/users/cart/clear");
+          } catch (err) {
+            console.error("Failed to clear online cart", err);
+          }
+        }
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event('cartUpdated'));
+
         alert("Order placed successfully!");
         window.location.href = "/my-orders";
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.msg || "Error placing order. Please try again.";
-      alert(msg);
+      console.error("❌ Checkout Error:", error);
+      const msg = error?.response?.data?.msg || error.message || "Error placing order. Please try again.";
+      alert(`Checkout Error: ${msg}`);
       setLoading(false);
     }
   };

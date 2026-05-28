@@ -20,7 +20,9 @@ function PaymentFailureContent() {
         
         <div className="bg-rose-50 rounded-xl px-4 py-3 mb-8 text-left border border-rose-100">
           <p className="text-sm font-medium text-rose-800">
-            No money was deducted from your account. You can safely try placing your order again.
+            ✓ No money was deducted from your account.<br/>
+            ✓ Your cart items are still saved.<br/>
+            You can safely try again or use Cash On Delivery.
           </p>
         </div>
 
