@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "http://localhost:5001";
+const BASE_URL = process.env.NEXT_PUBLIC_BASEURL || "https://khelbazaar-backend-1.onrender.com";
 
 export const getImageUrl = (imagePath: string | undefined): string => {
   if (!imagePath) return "https://placehold.co/400x400?text=No+Image";

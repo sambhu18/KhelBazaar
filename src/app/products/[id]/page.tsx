@@ -123,7 +123,7 @@ export default function ProductDetailPage() {
   const getImageUrl = (imagePath: string | undefined) => {
     if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
     if (imagePath.startsWith("http")) return imagePath;
-    const base = process.env.NEXT_PUBLIC_BASEURL || 'http://localhost:5001';
+    const base = process.env.NEXT_PUBLIC_BASEURL || 'https://khelbazaar-backend-1.onrender.com';
     return `${base}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 
@@ -164,6 +164,7 @@ export default function ProductDetailPage() {
       // Validate size selection for products with variants
       if (product.variants && product.variants.length > 0 && !selectedSize) {
         window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: 'Please select a size', type: "error" } }));
+        setActionLoading(null);
         return;
       }
 
@@ -178,11 +179,13 @@ export default function ProductDetailPage() {
       if (result.requiresLogin) {
         // Redirect to login
         router.push("/auth/Login");
+        setActionLoading(null);
         return;
       }
+
+      setActionLoading(null);
     } catch (err: any) {
       window.dispatchEvent(new CustomEvent("show-toast", { detail: { message: err.response?.data?.msg || 'Login first to add to cart', type: "error" } }));
-    } finally {
       setActionLoading(null);
     }
   };

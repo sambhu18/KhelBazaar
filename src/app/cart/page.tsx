@@ -16,7 +16,7 @@ export default function CartPage() {
   const getImageUrl = (imagePath: string | undefined) => {
     if (!imagePath) return "https://placehold.co/400x300?text=No+Image";
     if (imagePath.startsWith("http")) return imagePath;
-    const base = process.env.NEXT_PUBLIC_BASEURL || 'http://localhost:5001';
+    const base = process.env.NEXT_PUBLIC_BASEURL || 'https://khelbazaar-backend-1.onrender.com';
     return `${base}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 

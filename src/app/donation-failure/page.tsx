@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axiosInstance from '@/src/Services/axiosinstance';
 import Link from 'next/link';
 
-export default function DonationFailurePage() {
+function DonationFailureContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const donationId = searchParams.get('donationId');
@@ -145,5 +145,23 @@ export default function DonationFailurePage() {
         </p>
       </div>
     </div>
+  );
+}
+function DonationFailureLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
+        <div className="w-16 h-16 border-4 border-red-200 border-t-red-500 rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-600 font-bold">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function DonationFailurePage() {
+  return (
+    <Suspense fallback={<DonationFailureLoading />}>
+      <DonationFailureContent />
+    </Suspense>
   );
 }
