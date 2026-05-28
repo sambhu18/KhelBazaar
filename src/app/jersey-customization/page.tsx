@@ -34,34 +34,12 @@ export default function JerseyCustomizationPage() {
         if (jerseys.length > 0) {
           setJerseyTemplates(jerseys);
         } else {
-          // Fallback to sample jerseys if none found
-          setJerseyTemplates([
-            {
-              _id: '1',
-              title: 'Premium Match Jersey',
-              price: 2500,
-              description: 'Professional-grade match jersey with thermal-press technology',
-              image: 'https://images.unsplash.com/photo-1588698943485-618828062534?q=80&w=400',
-            },
-            {
-              _id: '2',
-              title: 'Training Jersey',
-              price: 1800,
-              description: 'Comfortable training jersey with breathable fabric',
-              image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=400',
-            },
-            {
-              _id: '3',
-              title: 'Team Jersey',
-              price: 2200,
-              description: 'Standard team jersey for clubs and organizations',
-              image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=400',
-            },
-          ]);
+          loadSampleJerseys();
         }
       } catch (err) {
         console.error('Error fetching jerseys:', err);
-        setError('Failed to load jerseys');
+        // Gracefully fallback to sample jerseys if API fails
+        loadSampleJerseys();
       } finally {
         setLoading(false);
       }
@@ -69,6 +47,32 @@ export default function JerseyCustomizationPage() {
 
     fetchJerseys();
   }, []);
+
+  const loadSampleJerseys = () => {
+    setJerseyTemplates([
+      {
+        _id: '1',
+        title: 'Premium Match Jersey',
+        price: 2500,
+        description: 'Professional-grade match jersey with thermal-press technology',
+        image: 'https://images.unsplash.com/photo-1588698943485-618828062534?q=80&w=400',
+      },
+      {
+        _id: '2',
+        title: 'Training Jersey',
+        price: 1800,
+        description: 'Comfortable training jersey with breathable fabric',
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=400',
+      },
+      {
+        _id: '3',
+        title: 'Team Jersey',
+        price: 2200,
+        description: 'Standard team jersey for clubs and organizations',
+        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=400',
+      },
+    ]);
+  };
 
   const handleCustomizationComplete = async (customization: JerseyCustomization) => {
     try {

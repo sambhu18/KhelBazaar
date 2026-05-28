@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   getProductById,
   getProductReviews,
@@ -79,6 +79,7 @@ interface Review {
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = params.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -235,12 +236,12 @@ export default function ProductDetailPage() {
       });
       
       window.dispatchEvent(new CustomEvent("show-toast", {
-        detail: { message: "Rental booking created successfully! Our team will contact you to confirm. Redirecting to your rentals...", type: "success" }
+        detail: { message: "Rental booking created successfully! Our team will contact you to confirm. Redirecting to homepage...", type: "success" }
       }));
       
-      // Refresh page after 2 seconds to show in rentals
+      // Redirect to homepage after 2 seconds
       setTimeout(() => {
-        window.location.href = '/dashboard/rentals';
+        window.location.href = '/';
       }, 2000);
       
       setShowRentalModal(false);

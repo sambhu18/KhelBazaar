@@ -141,8 +141,32 @@ export default function AdminProductsPage() {
         setSuccessMsg("Product added successfully!");
       }
 
-      resetForm();
-      fetchProducts();
+      // Reset form and close it immediately without showing loading
+      setFormData({
+        title: "",
+        description: "",
+        price: "",
+        currency: "NPR",
+        stock: "",
+        categories: [],
+        sizes: [],
+        sku: "",
+        images: [],
+      });
+      setPreviewImages([]);
+      setEditingId(null);
+      setShowForm(false);
+      setErrorMsg("");
+      
+      // Fetch products after form is closed (delay to avoid stuck appearance)
+      setTimeout(() => {
+        fetchProducts();
+      }, 500);
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSuccessMsg("");
+      }, 5000);
     } catch (error: any) {
       const msg = error?.response?.data?.msg || "Failed to save product";
       const detail = error?.response?.data?.error;

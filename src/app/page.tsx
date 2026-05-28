@@ -112,7 +112,7 @@ export default function HomePage() {
       });
 
       const donationId = donationRes.data?.donation?._id;
-      console.log("✅ Donation created:", donationId);
+      console.log("Donation created:", donationId);
 
       // Initiate eSewa payment
       const esewaRes = await axiosInstance.post(
@@ -120,7 +120,7 @@ export default function HomePage() {
       );
 
       const { paymentUrl, params } = esewaRes.data;
-      console.log("📋 eSewa Form Params:", {
+      console.log("eSewa Form Params:", {
         url: paymentUrl,
         amount: params.amount,
         transaction_uuid: params.transaction_uuid,
@@ -141,10 +141,10 @@ export default function HomePage() {
       });
 
       document.body.appendChild(form);
-      console.log("🔄 Submitting form to eSewa...");
+      console.log("Submitting form to eSewa...");
       form.submit();
     } catch (err: any) {
-      console.error("❌ Donation error:", err);
+      console.error("Donation error:", err);
       alert(
         err.response?.data?.msg ||
           "Error processing donation. Please try again.\n\nNote: If eSewa shows 'Service unavailable', it may be a temporary issue with eSewa's test server. Please try again in a few moments."
@@ -155,22 +155,22 @@ export default function HomePage() {
   };
 
   const categories = [
-    { id: "football", name: "Football", sub: "Elite Pitch Gear", icon: "⚽", img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2093&auto=format&fit=crop" },
-    { id: "cricket", name: "Cricket", sub: "Pro Match Kits", icon: "🏏", img: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2070&auto=format&fit=crop" },
-    { id: "basketball", name: "Basketball", sub: "Elite Court Gear", icon: "🏀", img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop" },
-    { id: "jersey", name: "Jerseys", sub: "Custom Team Kits", icon: "👕", img: "https://images.unsplash.com/photo-1588698943485-618828062534?q=80&w=2070&auto=format&fit=crop" },
+    { id: "football", name: "Football", sub: "Premium Field Gear", img: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2093&auto=format&fit=crop" },
+    { id: "cricket", name: "Cricket", sub: "Quality Match Equipment", img: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=2070&auto=format&fit=crop" },
+    { id: "basketball", name: "Basketball", sub: "Professional Court Gear", img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop" },
+    { id: "jersey", name: "Jerseys", sub: "Custom Team Apparel", img: "https://images.unsplash.com/photo-1588698943485-618828062534?q=80&w=2070&auto=format&fit=crop" },
   ];
 
   // Live activity ticker data
   const activities = [
-    "Sambhu purchased Nike Football ⚡",
-    "Sita joined Elite Runners Club 🏃",
-    "Sambhu rented a Cricket Kit 🏏",
-    "Mina left a 5-star review ⭐",
-    "Sambhu donated NPR 1000 ❤️",
-    "Priya customized her team jersey 👕",
-    "Suresh booked a basketball court 🏀",
-    "Anita shared a community post 📸",
+    "Sambhu purchased Nike Football",
+    "Sita joined Elite Runners Club",
+    "Sambhu rented a Cricket Kit",
+    "Mina left a 5-star review",
+    "Sambhu donated NPR 1000",
+    "Priya customized her team jersey",
+    "Suresh booked a basketball court",
+    "Anita shared a community post",
   ];
 
   return (
@@ -186,9 +186,9 @@ export default function HomePage() {
 
         {/* Background with Parallax */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 transition-transform duration-100 will-change-transform"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-50 transition-transform duration-100 will-change-transform"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?q=80&w=2070&auto=format&fit=crop')",
+            backgroundImage: "url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=2070&auto=format&fit=crop')",
             transform: `translateY(${scrollY * 0.15}px) scale(1.1)`,
           }}
         />
@@ -205,16 +205,16 @@ export default function HomePage() {
           <div className="max-w-4xl space-y-10">
             <div className="reveal active inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-teal-500/10 border border-teal-500/20 backdrop-blur-3xl shadow-2xl">
               <span className="w-2.5 h-2.5 rounded-full bg-teal-500 animate-ping" />
-              <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.3em]">Nepal's Elite Sports Portal</span>
+              <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.3em]">Sports Gear Made Easy</span>
             </div>
 
-            <h1 className="reveal active text-[80px] md:text-[120px] lg:text-[140px] font-black text-white leading-[0.78] tracking-tight hover:tracking-tighter transition-all duration-1000 uppercase">
-              REDEFINE <br />
-              <span className="text-gradient text-glow">PERFORMANCE.</span>
+            <h1 className="reveal active text-[48px] md:text-[64px] lg:text-[80px] font-black text-white leading-[0.9] tracking-tight hover:tracking-tighter transition-all duration-1000 uppercase">
+              GET THE GEAR <br />
+              <span className="text-gradient text-glow">PLAY THE GAME.</span>
             </h1>
 
             <p className="reveal active text-xl md:text-2xl text-gray-400 leading-relaxed font-bold max-w-3xl border-l-[6px] border-[#00B8AE] pl-8">
-              Experience the pinnacle of sports engineering. We bridge the gap between grassroots passion and professional excellence.
+              Find the equipment you need. Rent when you want. Join with thousands of players in Nepal who are making sports accessible to everyone.
             </p>
 
             <div className="reveal active flex flex-wrap gap-6 pt-4">
@@ -222,8 +222,8 @@ export default function HomePage() {
                 onClick={() => router.push('/products')}
                 className="group relative px-12 py-5 bg-[#00B8AE] text-white rounded-2xl font-black text-lg transition-all duration-500 hover:bg-teal-400 hover:shadow-[0_25px_60px_rgba(0,184,174,0.4)] transform hover:-translate-y-2 active:scale-95 overflow-hidden"
               >
-                <span className="relative z-10 flex items-center gap-3 italic">
-                  GEAR UP NOW <span className="text-2xl">⚡</span>
+                <span className="relative z-10 flex items-center gap-3">
+                  SHOP NOW
                 </span>
                 <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </button>
@@ -232,7 +232,7 @@ export default function HomePage() {
                 onClick={() => router.push('/community')}
                 className="px-12 py-5 bg-white/5 backdrop-blur-xl text-white border-2 border-white/10 rounded-2xl font-black text-lg hover:bg-white/10 transition-all duration-500 transform hover:-translate-y-2 active:scale-95 shadow-2xl"
               >
-                THE COMMUNITY
+                JOIN COMMUNITY
               </button>
             </div>
           </div>
@@ -279,14 +279,14 @@ export default function HomePage() {
       <div className="relative z-30 -mt-0 bg-gray-950 pb-20 pt-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="glass-card-dark rounded-[40px] p-12 lg:p-16 grid grid-cols-2 lg:grid-cols-4 gap-12 border border-white/10 shadow-3xl">
-            {[
-              { label: "Products", value: products.length > 0 ? `${products.length}+` : "250+", color: "text-white", icon: "💎" },
-              { label: "Rentals Available", value: rentalProducts.length > 0 ? `${rentalProducts.length}+` : "50+", color: "text-[#00B8AE]", icon: "🏟️" },
-              { label: "Categories", value: "12+", color: "text-white", icon: "🌎" },
-              { label: "Elite Clubs", value: "95+", color: "text-[#00B8AE]", icon: "🤝" }
-            ].map((stat, i) => (
+            {
+              [
+                { label: "Products", value: products.length > 0 ? `${products.length}+` : "250+", color: "text-white" },
+                { label: "Rentals Available", value: rentalProducts.length > 0 ? `${rentalProducts.length}+` : "50+", color: "text-[#00B8AE]" },
+                { label: "Categories", value: "12+", color: "text-white" },
+                { label: "Active Members", value: "95+", color: "text-[#00B8AE]" }
+              ].map((stat, i) => (
               <div key={i} className="text-center group cursor-default">
-                <div className="text-3xl mb-3 animate-float" style={{ animationDelay: `${i * 0.5}s` }}>{stat.icon}</div>
                 <p className={`text-4xl lg:text-6xl font-black mb-2 transition-transform group-hover:scale-110 ${stat.color}`}>
                   {stat.value}
                 </p>
@@ -304,8 +304,8 @@ export default function HomePage() {
             <div className="max-w-3xl">
               <div className="w-20 h-1.5 bg-[#00B8AE] mb-8 rounded-full" />
               <h2 className="text-6xl md:text-8xl font-black text-gray-950 leading-none tracking-tighter uppercase mb-4">
-                THE <br />
-                <span className="text-[#00B8AE] italic">COLLECTION</span>
+                SHOP <br />
+                <span className="text-[#00B8AE] italic">BY SPORT</span>
               </h2>
             </div>
             <Link href="/products" className="group flex items-center gap-4 text-gray-900 font-black text-sm tracking-widest uppercase hover:text-[#00B8AE] transition-all">
@@ -333,7 +333,6 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent z-10 transition-opacity group-hover:opacity-90" />
 
                 <div className="absolute bottom-10 left-10 z-20">
-                  <p className="text-teal-400 font-black text-3xl mb-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">{cat.icon}</p>
                   <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-1 group-hover:text-[#00B8AE] transition-colors">{cat.name}</h3>
                   <p className="text-gray-400 font-bold text-xs tracking-widest uppercase opacity-0 group-hover:opacity-100 transform translate-y-3 group-hover:translate-y-0 transition-all duration-500 delay-100">{cat.sub}</p>
                   <div className="w-10 h-1 bg-[#00B8AE] rounded-full group-hover:w-full transition-all duration-700 mt-5" />
@@ -442,7 +441,7 @@ export default function HomePage() {
                   <span className="text-teal-400 text-[10px] font-black uppercase tracking-[0.2em]">Flexibility & Performance</span>
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black text-white leading-[0.85] tracking-tight uppercase">
-                  ELITE <br /><span className="text-gradient text-glow">RENTALS</span>
+                  TRY BEFORE <br /><span className="text-gradient text-glow">YOU BUY</span>
                 </h2>
               </div>
               <Link href="/products?isRentable=true" className="group flex items-center gap-4 text-white font-black text-xs tracking-widest uppercase hover:text-teal-400 transition-colors">
@@ -490,10 +489,10 @@ export default function HomePage() {
                   <span className="text-teal-400 text-[10px] font-black uppercase tracking-widest">Grassroots Initiative</span>
                 </div>
                 <h2 className="text-5xl md:text-6xl font-black text-white leading-tight uppercase tracking-tighter">
-                  GIVING BACK <br />
-                  <span className="text-[#00B8AE] italic">TO THE GAME</span>
+                  SUPPORT <br />
+                  <span className="text-[#00B8AE] italic">LOCAL ATHLETES</span>
                 </h2>
-                <p className="text-lg text-gray-400 leading-relaxed font-bold max-w-lg">Your contributions fund professional equipment for youth athletes across Nepal.</p>
+                <p className="text-lg text-gray-400 leading-relaxed font-bold max-w-lg">Help us provide quality equipment to young athletes in Nepal. Your donation makes a real difference.</p>
                 <div className="grid grid-cols-3 gap-4 pt-2">
                    {[
                      { val: "500+", label: "Kits" },
@@ -516,7 +515,7 @@ export default function HomePage() {
                          <button key={amt} onClick={() => handleDonate(amt)} className="py-4 rounded-xl border border-white/10 bg-white/5 text-white font-black hover:bg-[#00B8AE] hover:border-teal-400 transition-all text-sm">RS {amt}</button>
                       ))}
                    </div>
-                   <button onClick={() => handleDonate("your gift")} className="w-full py-5 bg-[#00B8AE] text-white font-black rounded-xl shadow-xl hover:shadow-teal-500/40 hover:bg-teal-400 transition-all text-sm tracking-wider">GIVE THE GIFT OF SPORT</button>
+                   <button onClick={() => handleDonate("your gift")} className="w-full py-5 bg-[#00B8AE] text-white font-black rounded-xl shadow-xl hover:shadow-teal-500/40 hover:bg-teal-400 transition-all text-sm tracking-wider">DONATE NOW</button>
 
                    {/* Donation Modal */}
                    {showDonationModal && (
@@ -526,9 +525,9 @@ export default function HomePage() {
                            <h2 className="text-2xl font-black text-gray-900">Support Grassroots</h2>
                            <button
                              onClick={() => setShowDonationModal(false)}
-                             className="text-2xl text-gray-500 hover:text-gray-900 transition-colors"
+                             className="text-2xl text-gray-500 hover:text-gray-900 transition-colors font-black"
                            >
-                             ✕
+                             ×
                            </button>
                          </div>
 
@@ -691,10 +690,10 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/80 to-transparent z-10" />
           <div className="relative z-20 p-10 md:p-24 max-w-4xl">
             <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.85] uppercase tracking-tighter">
-              BEYOND THE <br />
-              <span className="text-gradient text-glow italic">APPAREL.</span>
+              CREATE YOUR <br />
+              <span className="text-gradient text-glow italic">TEAMS JERSEY.</span>
             </h2>
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed font-bold max-w-2xl">Elite jersey customization with professional thermal-press technology.</p>
+            <p className="text-xl text-gray-400 mb-10 leading-relaxed font-bold max-w-2xl">Custom jersey design with professional quality. Perfect for teams, clubs, and events.</p>
             <button
               onClick={() => router.push('/jersey-customization')}
               className="px-14 py-6 bg-white text-black rounded-[20px] font-black text-lg hover:bg-[#00B8AE] hover:text-white transition-all duration-500 shadow-xl"
@@ -709,13 +708,13 @@ export default function HomePage() {
       <section className="bg-white py-28 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
-            {[
-              { title: "ELITE DELIVERY", desc: "Express logistics across all major districts.", color: "bg-teal-500", icon: "🚀" },
-              { title: "PRO WARRANTY", desc: "12-month performance guarantee.", color: "bg-blue-500", icon: "🛡️" },
-              { title: "INSIDER ACCESS", desc: "Join our pro-tier for early drops.", color: "bg-[#00B8AE]", icon: "🔑" }
-            ].map((pillar, i) => (
+            {
+              [
+                { title: "FAST DELIVERY", desc: "Express shipping to all major districts.", color: "bg-teal-500" },
+                { title: "QUALITY GUARANTEE", desc: "12-month warranty on all products.", color: "bg-blue-500" },
+                { title: "COMMUNITY FIRST", desc: "Member-exclusive benefits and early access.", color: "bg-[#00B8AE]" }
+              ].map((pillar, i) => (
               <div key={i} className="group relative text-center md:text-left">
-                <div className="text-4xl mb-6">{pillar.icon}</div>
                 <div className={`w-14 h-14 rounded-2xl ${pillar.color} mb-8 rotate-12 group-hover:rotate-0 transition-transform duration-500 shadow-xl opacity-80`} />
                 <h3 className="text-2xl font-black text-gray-950 mb-4 uppercase tracking-tighter">{pillar.title}</h3>
                 <p className="text-lg text-gray-500 font-medium italic">{pillar.desc}</p>
@@ -731,14 +730,14 @@ export default function HomePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[500px] bg-[#00B8AE]/10 blur-[180px] rounded-full pointer-events-none" />
         <div className="relative z-10 space-y-14 reveal active">
           <h2 className="text-[72px] md:text-[120px] lg:text-[150px] font-black text-white tracking-tighter uppercase italic leading-[0.7] mb-5">
-            LEAVE <br />
-            <span className="text-gradient text-glow">A LEGACY</span>
+            READY TO <br />
+            <span className="text-gradient text-glow">PLAY?</span>
           </h2>
           <button
             onClick={() => router.push('/products')}
             className="group inline-flex items-center gap-6 px-16 py-7 bg-white text-black rounded-full font-black text-xl uppercase tracking-[0.2em] transition-all duration-700 hover:bg-[#00B8AE] hover:text-white transform hover:-translate-y-3 shadow-2xl"
           >
-            STEP INTO THE ARENA
+            BROWSE NOW
             <span className="text-2xl group-hover:translate-x-2 transition-transform">→</span>
           </button>
         </div>

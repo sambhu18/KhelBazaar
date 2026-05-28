@@ -30,7 +30,7 @@ export default function LoginPage() {
       const res = await login(form);
       setSuccess("Login successful! Redirecting...");
       localStorage.setItem("token", res.data.token);
-      setTimeout(() => router.push("/dashboard"), 1000);
+      setTimeout(() => router.push("/"), 1000);
     } catch (e: any) {
       setErr(e?.response?.data?.msg || "Login failed. Please try again.");
       setLoading(false);
@@ -45,7 +45,7 @@ export default function LoginPage() {
       const res = await googleSignIn({ idToken: credentialResponse.credential });
       setSuccess("Google login successful! Redirecting...");
       localStorage.setItem("token", res.data.token);
-      setTimeout(() => router.push("/dashboard"), 1000);
+      setTimeout(() => router.push("/"), 1000);
     } catch (e: any) {
       setErr(e?.response?.data?.msg || "Google login failed");
       setLoading(false);
