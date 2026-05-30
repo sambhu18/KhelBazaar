@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
     try {
       const res = await login(form);
 
-      console.log("LOGIN RESPONSE:", res.data); // 🔥 DEBUG — DO NOT REMOVE
+      console.log("LOGIN RESPONSE:", res.data); 
 
       const role = res.data.role || res.data.user?.role;
 
