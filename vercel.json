@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_BASEURL": "@next_public_baseurl",
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "@next_public_google_client_id"
+  }
+}
